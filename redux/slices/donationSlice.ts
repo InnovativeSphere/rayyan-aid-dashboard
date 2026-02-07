@@ -33,16 +33,21 @@ const initialState: DonationsState = {
 // Fetch all donations (optionally by project)
 export const fetchDonations = createAsyncThunk<
   Donation[],
-  number | undefined,
+  number | undefined, // project_id optional
   { rejectValue: string }
 >("donations/fetchAll", async (project_id, thunkAPI) => {
   try {
-    const data = await api.getDonations(project_id);
+    // if project_id is undefined, fetch all donations
+    const data =
+      project_id === undefined
+        ? await api.getDonations() // fetch all donations
+        : await api.getDonations(project_id); // fetch for specific project
     return data;
   } catch (err: any) {
     return thunkAPI.rejectWithValue(err.response?.data || err.message);
   }
 });
+
 
 // Add a new donation
 export const addDonation = createAsyncThunk<
@@ -126,29 +131,43 @@ const donationsSlice = createSlice({
         state.status = "loading";
         state.error = null;
       })
-      .addCase(fetchDonations.fulfilled, (state, action: PayloadAction<Donation[]>) => {
-        state.status = "succeeded";
-        state.donations = action.payload;
-      })
+      .addCase(
+        fetchDonations.fulfilled,
+        (state, action: PayloadAction<Donation[]>) => {
+          state.status = "succeeded";
+          state.donations = action.payload;
+        },
+      )
       .addCase(fetchDonations.rejected, (state, action) => {
         state.status = "failed";
         state.error = action.payload || "Failed to fetch donations";
       })
 
       // add donation
-      .addCase(addDonation.fulfilled, (state, action: PayloadAction<Donation>) => {
-        state.donations.push(action.payload);
-      })
+      .addCase(
+        addDonation.fulfilled,
+        (state, action: PayloadAction<Donation>) => {
+          state.donations.push(action.payload);
+        },
+      )
 
       // update donation
       .addCase(updateDonation.fulfilled, (state, action) => {
-        const index = state.donations.findIndex(d => d.id === action.payload.id);
-        if (index >= 0) state.donations[index] = { ...state.donations[index], ...action.meta.arg };
+        const index = state.donations.findIndex(
+          (d) => d.id === action.payload.id,
+        );
+        if (index >= 0)
+          state.donations[index] = {
+            ...state.donations[index],
+            ...action.meta.arg,
+          };
       })
 
       // remove donation
       .addCase(removeDonation.fulfilled, (state, action) => {
-        state.donations = state.donations.filter(d => d.id !== action.payload.id);
+        state.donations = state.donations.filter(
+          (d) => d.id !== action.payload.id,
+        );
       })
 
       // custom grouped by amount

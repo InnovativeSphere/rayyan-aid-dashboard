@@ -42,20 +42,26 @@ const normalizeError = (err: any) => {
 };
 
 // ------------------- THUNKS -------------------
-
-// Fetch all images
+// Allow optional project_id
 export const fetchProjectImages = createAsyncThunk<
   ProjectImage[],
-  { project_id?: number } | undefined,
+  number | undefined,
   { rejectValue: string }
->("projectImages/fetch", async (payload, thunkAPI) => {
-  try {
-    const images = await api.getProjectImages(payload?.project_id);
-    return images;
-  } catch (err) {
-    return thunkAPI.rejectWithValue(normalizeError(err));
+>(
+  "projectImages/fetch",
+  async (project_id, thunkAPI) => {
+    try {
+      // If project_id is undefined, fetch all images
+      const images = project_id
+        ? await api.getProjectImages(project_id)
+        : await api.getAllProjectImages(); // <-- make sure your API has this method
+      return images;
+    } catch (err) {
+      return thunkAPI.rejectWithValue(normalizeError(err));
+    }
   }
-});
+);
+
 
 // Add images
 export const addProjectImages = createAsyncThunk<
@@ -122,7 +128,7 @@ const projectImagesSlice = createSlice({
         (state, action: PayloadAction<ProjectImage[]>) => {
           state.loading = false;
           state.images = action.payload;
-        }
+        },
       )
       .addCase(fetchProjectImages.rejected, (state, action) => {
         state.loading = false;
@@ -139,7 +145,7 @@ const projectImagesSlice = createSlice({
         (state, action: PayloadAction<ProjectImage[]>) => {
           state.loading = false;
           state.images.push(...action.payload);
-        }
+        },
       )
       .addCase(addProjectImages.rejected, (state, action) => {
         state.loading = false;
@@ -156,9 +162,9 @@ const projectImagesSlice = createSlice({
         (state, action: PayloadAction<{ id: number }>) => {
           state.loading = false;
           state.images = state.images.filter(
-            (img) => img.id !== action.payload.id
+            (img) => img.id !== action.payload.id,
           );
-        }
+        },
       )
       .addCase(removeProjectImage.rejected, (state, action) => {
         state.loading = false;

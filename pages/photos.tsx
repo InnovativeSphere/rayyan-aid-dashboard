@@ -9,6 +9,8 @@ import {
 } from "../redux/slices/ProjectImagesSlice";
 import AddProjectImageModal from "../components/AddProjectImageModal";
 import EditProjectImageModal from "../components/EditProjectImageModal";
+import Loader from "../components/Loader";
+import { PlusIcon } from "@heroicons/react/24/outline";
 
 export default function PhotosPage() {
   const dispatch = useDispatch<AppDispatch>();
@@ -21,6 +23,7 @@ export default function PhotosPage() {
   const [selectedImage, setSelectedImage] = useState<ProjectImage | null>(null);
   const [refreshCounter, setRefreshCounter] = useState(0);
   const [currentIndex, setCurrentIndex] = useState(0);
+  const [projectFilter, setProjectFilter] = useState<string>("All");
 
   useEffect(() => {
     dispatch(fetchProjectImages());
@@ -35,13 +38,15 @@ export default function PhotosPage() {
 
   // Group images by project
   const groupedImages: Record<string, ProjectImage[]> = {};
-  images.forEach((img) => {
-    const projectName = img.project_title || `Project ${img.project_id}`;
-    if (!groupedImages[projectName]) groupedImages[projectName] = [];
-    groupedImages[projectName].push(img);
-  });
+  images
+    .filter((img) => projectFilter === "All" || img.project_title === projectFilter)
+    .forEach((img) => {
+      const projectName = img.project_title || `Project ${img.project_id}`;
+      if (!groupedImages[projectName]) groupedImages[projectName] = [];
+      groupedImages[projectName].push(img);
+    });
 
-  // Synchronize slides
+  // Auto-slide effect
   useEffect(() => {
     const maxImages = Math.max(
       ...Object.values(groupedImages).map((imgs) =>
@@ -55,26 +60,44 @@ export default function PhotosPage() {
     if (maxImages === 0) return;
     const interval = setInterval(() => {
       setCurrentIndex((prev) => (prev + 1) % maxImages);
-    }, 3500); // slightly slower for better UX
+    }, 3500);
     return () => clearInterval(interval);
   }, [groupedImages]);
 
+  const projectOptions = ["All", ...Array.from(new Set(images.map((i) => i.project_title)))];
+
   return (
-    <div className="p-6 sm:p-8 space-y-12">
+    <div className="p-6 sm:p-8 space-y-8">
+      {/* HEADER */}
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 sm:gap-0">
         <h1 className="text-3xl sm:text-4xl font-bold text-[var(--color-base)] font-figtree">
           Project Photos
         </h1>
-        <button
-          onClick={() => setAddModalOpen(true)}
-          className="bg-[var(--color-base)] hover:bg-[var(--color-accent)] text-white px-5 py-2 rounded-lg shadow-md transition-all duration-300"
-        >
-          Add Image
-        </button>
+        <div className="flex gap-2 items-center">
+          <select
+            value={projectFilter}
+            onChange={(e) => setProjectFilter(e.target.value)}
+            className="border rounded px-3 py-1 shadow-sm bg-white"
+          >
+            {projectOptions.map((p) => (
+              <option key={p} value={p}>{p}</option>
+            ))}
+          </select>
+          <button
+            onClick={() => setAddModalOpen(true)}
+            className="flex items-center gap-1 bg-[var(--color-base)] hover:bg-[var(--color-accent)] text-white px-4 py-2 rounded-lg shadow-md transition-all duration-300"
+          >
+            <PlusIcon className="w-5 h-5" />
+            Add Image
+          </button>
+        </div>
       </div>
 
+      {/* LOADER */}
       {loading && (
-        <p className="text-gray-500 font-medium">Loading images...</p>
+        <div className="flex justify-center py-20">
+          <Loader />
+        </div>
       )}
       {error && <p className="text-red-500 font-medium">{error}</p>}
 
@@ -87,19 +110,20 @@ export default function PhotosPage() {
             <h2 className="text-2xl font-semibold text-[var(--color-accent)] font-figtree">
               {projectName}
             </h2>
-
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <CrossfadeSlideshow
                 images={beforeImages}
                 label="Before"
-                onEdit={openEditModal}
                 currentIndex={currentIndex}
+                setCurrentIndex={setCurrentIndex}
+                onEdit={openEditModal}
               />
               <CrossfadeSlideshow
                 images={afterImages}
                 label="After"
-                onEdit={openEditModal}
                 currentIndex={currentIndex}
+                setCurrentIndex={setCurrentIndex}
+                onEdit={openEditModal}
               />
             </div>
           </div>
@@ -130,15 +154,17 @@ export default function PhotosPage() {
 interface CrossfadeSlideshowProps {
   images: ProjectImage[];
   label: string;
-  onEdit: (img: ProjectImage) => void;
   currentIndex: number;
+  setCurrentIndex: React.Dispatch<React.SetStateAction<number>>;
+  onEdit: (img: ProjectImage) => void;
 }
 
 function CrossfadeSlideshow({
   images,
   label,
-  onEdit,
   currentIndex,
+  setCurrentIndex,
+  onEdit,
 }: CrossfadeSlideshowProps) {
   if (!images || images.length === 0)
     return (
@@ -149,7 +175,6 @@ function CrossfadeSlideshow({
 
   const idx = currentIndex % images.length;
   const currentImage = images[idx];
-
   const visibleThumbnails = images.slice(0, 6);
 
   return (
@@ -184,14 +209,14 @@ function CrossfadeSlideshow({
             key={img.id}
             src={img.image_url}
             alt="thumbnail"
-            className={`w-14 h-14 sm:w-16 sm:h-16 object-cover rounded border cursor-pointer transition-all duration-300 hover:scale-105 ${
+            className={`w-12 h-12 sm:w-14 sm:h-14 object-cover rounded border cursor-pointer transition-all duration-300 hover:scale-105 ${
               i === idx ? "border-[var(--color-base)]" : "border-gray-300"
             }`}
-            onClick={() => onEdit(img)}
+            onClick={() => setCurrentIndex(i)}
           />
         ))}
         {images.length > 6 && (
-          <div className="w-14 h-14 sm:w-16 sm:h-16 flex items-center justify-center bg-gray-200 rounded text-sm font-medium text-gray-600">
+          <div className="w-12 h-12 sm:w-14 sm:h-14 flex items-center justify-center bg-gray-200 rounded text-sm font-medium text-gray-600">
             +{images.length - 6}
           </div>
         )}

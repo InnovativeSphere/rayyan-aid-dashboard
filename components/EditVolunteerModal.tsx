@@ -17,26 +17,34 @@ export default function EditVolunteerModal({
   volunteer,
 }: EditVolunteerModalProps) {
   const dispatch = useDispatch<AppDispatch>();
+
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
   const [bio, setBio] = useState("");
+  const [photoUrl, setPhotoUrl] = useState("");
+  const [imgError, setImgError] = useState(false);
 
   useEffect(() => {
     if (volunteer) {
       setFirstName(volunteer.first_name);
       setLastName(volunteer.last_name);
       setBio(volunteer.bio || "");
+      setPhotoUrl(volunteer.photo_url || "");
+      setImgError(false);
     }
   }, [volunteer]);
 
   if (!isOpen || !volunteer) return null;
+
+  const initials =
+    `${firstName.charAt(0)}${lastName.charAt(0)}`.toUpperCase() || "V";
 
   const handleUpdate = async (e: React.FormEvent) => {
     e.preventDefault();
     await dispatch(
       updatePerson({
         id: volunteer.id,
-        updates: { first_name: firstName, last_name: lastName, bio },
+        updates: { first_name: firstName, last_name: lastName, bio, photo_url: photoUrl || undefined },
       })
     );
     onClose();
@@ -50,35 +58,46 @@ export default function EditVolunteerModal({
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center">
-      {/* Blurred overlay */}
-      <div
-        className="absolute inset-0 bg-black/30 backdrop-blur-sm"
-        onClick={onClose}
-      />
-
-      {/* Modal card */}
-      <div className="relative bg-[var(--color-white)] rounded-[var(--radius-lg)] shadow-xl w-full max-w-md p-6 animate-fadeIn z-10">
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm p-4">
+      <div className="bg-white rounded-xl shadow-xl p-6 w-full max-w-xs sm:max-w-sm md:max-w-md animate-fadeIn my-12 max-h-[90vh] overflow-y-auto">
+        
+        {/* Header */}
         <div className="flex justify-between items-center mb-4">
-          <h2 className="text-xl font-bold text-[var(--color-base)]">
+          <h2 className="text-lg sm:text-xl font-bold text-[var(--color-base)]">
             Edit Volunteer
           </h2>
           <button
             onClick={onClose}
-            className="text-gray-500 hover:text-gray-700 transition-all duration-500 font-bold"
+            className="text-gray-500 hover:text-gray-700 text-lg"
           >
-            ×
+            ✕
           </button>
         </div>
 
-        <form onSubmit={handleUpdate} className="space-y-4">
+        {/* Avatar */}
+        <div className="flex justify-center mb-4">
+          {photoUrl && !imgError ? (
+            <img
+              src={photoUrl}
+              onError={() => setImgError(true)}
+              className="w-20 h-20 sm:w-24 sm:h-24 rounded-full object-cover border"
+            />
+          ) : (
+            <div className="w-20 h-20 sm:w-24 sm:h-24 rounded-full bg-[var(--color-base)] text-white flex items-center justify-center text-xl sm:text-2xl font-bold">
+              {initials}
+            </div>
+          )}
+        </div>
+
+        {/* Form */}
+        <form onSubmit={handleUpdate} className="space-y-3">
           <input
             type="text"
             placeholder="First Name"
             value={firstName}
             onChange={(e) => setFirstName(e.target.value)}
             required
-            className="w-full border border-gray-300 rounded-[var(--radius-lg)] p-2 focus:outline-none focus:ring-2 focus:ring-[var(--color-base)] transition-all duration-500"
+            className="w-full border p-2 rounded-lg focus:border-[var(--color-base)] outline-none text-sm"
           />
           <input
             type="text"
@@ -86,26 +105,37 @@ export default function EditVolunteerModal({
             value={lastName}
             onChange={(e) => setLastName(e.target.value)}
             required
-            className="w-full border border-gray-300 rounded-[var(--radius-lg)] p-2 focus:outline-none focus:ring-2 focus:ring-[var(--color-base)] transition-all duration-500"
+            className="w-full border p-2 rounded-lg focus:border-[var(--color-base)] outline-none text-sm"
+          />
+          <input
+            type="text"
+            placeholder="Photo URL (optional)"
+            value={photoUrl}
+            onChange={(e) => {
+              setPhotoUrl(e.target.value);
+              setImgError(false);
+            }}
+            className="w-full border p-2 rounded-lg focus:border-[var(--color-base)] outline-none text-sm"
           />
           <textarea
             placeholder="Bio"
             value={bio}
             onChange={(e) => setBio(e.target.value)}
-            className="w-full border border-gray-300 rounded-[var(--radius-lg)] p-2 focus:outline-none focus:ring-2 focus:ring-[var(--color-base)] transition-all duration-500"
+            className="w-full border p-2 rounded-lg focus:border-[var(--color-base)] outline-none resize-none h-20 text-sm"
           />
 
-          <div className="flex justify-between gap-3">
+          {/* Actions */}
+          <div className="flex flex-col sm:flex-row gap-3">
             <button
               type="submit"
-              className="flex-1 bg-[var(--color-base)] text-[var(--color-white)] p-2 rounded-[var(--radius-lg)] hover:bg-[var(--color-accent)] transition-all duration-500"
+              className="flex-1 bg-[var(--color-accent)] text-white p-2 rounded-lg hover:bg-[var(--color-base)] transition font-medium text-sm"
             >
               Save Changes
             </button>
             <button
               type="button"
               onClick={handleDelete}
-              className="flex-1 bg-red-600 text-white p-2 rounded-[var(--radius-lg)] hover:bg-red-700 transition-all duration-500"
+              className="flex-1 bg-red-600 text-white p-2 rounded-lg hover:bg-red-700 transition font-medium text-sm"
             >
               Delete
             </button>

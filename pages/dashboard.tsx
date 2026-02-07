@@ -4,12 +4,14 @@ import { useEffect, useMemo, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { RootState, AppDispatch } from "../redux/store";
 import Link from "next/link";
+
 import {
   fetchDonations,
   fetchDonationsGroupedByAmount,
   fetchTotalDonationsPerProject,
 } from "../redux/slices/donationSlice";
 import { fetchProjects } from "../redux/slices/projectsSlice";
+import { fetchPartners } from "../redux/slices/partnersSlice";
 
 import StatsCard from "@/components/StatusCard";
 import { Card } from "@/components/Card";
@@ -30,23 +32,28 @@ import {
   DollarSign,
   Image as ImageIcon,
   Activity,
-  Users
+  Users,
+  Handshake,
 } from "lucide-react";
+import Loader from "@/components/Loader";
+import Badge from "@/components/Badge";
 
 export default function Dashboard() {
   const dispatch = useDispatch<AppDispatch>();
   const [selectedProject, setSelectedProject] = useState<number | "all">("all");
 
-  const { donations, groupedByAmount } = useSelector(
+  const { donations } = useSelector(
     (state: RootState) => state.donations,
   );
   const { projects } = useSelector((state: RootState) => state.projects);
+  const { partners } = useSelector((state: RootState) => state.partners);
 
   useEffect(() => {
     dispatch(fetchDonations());
     dispatch(fetchDonationsGroupedByAmount());
     dispatch(fetchTotalDonationsPerProject());
     dispatch(fetchProjects());
+    dispatch(fetchPartners());
   }, [dispatch]);
 
   /* -------------------- DATA -------------------- */
@@ -76,15 +83,32 @@ export default function Dashboard() {
     }).format(totalDonationsAmount);
   }, [totalDonationsAmount]);
 
+  const isLoading =
+    !projects.length && !donations.length;
+
   /* -------------------- UI -------------------- */
+
+  if (isLoading) {
+    return (
+      <div className="h-[60vh] flex items-center justify-center">
+        <Loader />
+      </div>
+    );
+  }
 
   return (
     <div className="flex flex-col gap-10 mt-6">
+
       {/* HEADER */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-        <h1 className="text-2xl font-bold text-[var(--color-black)]">
-          Dashboard
-        </h1>
+        <div>
+          <h1 className="text-2xl font-bold text-[var(--color-black)]">
+            Dashboard
+          </h1>
+          <p className="text-sm text-gray-500">
+            Platform performance overview
+          </p>
+        </div>
 
         <select
           value={selectedProject}
@@ -104,89 +128,16 @@ export default function Dashboard() {
         </select>
       </div>
 
-      {/* STATS */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-6">
-        <StatsCard
-          title="Projects"
-          value={projects.length}
-          className="bg-[var(--color-secondary)] text-white"
-          icon={<Folder className="w-5 h-5" />}
-        />
-        <StatsCard
-          title="Donations"
-          value={formattedTotal}
-          className="bg-[var(--color-base)] text-white"
-          icon={<DollarSign className="w-5 h-5" />}
-        />
-        <StatsCard
-          title="Donors"
-          value={filteredDonations.length}
-          className="bg-[var(--color-accent)] text-white"
-          icon={<Users className="w-5 h-5" />}
-        />
-        <StatsCard
-          title="Active"
-          value={projects.length}
-          className="bg-[var(--color-base)] text-white"
-          icon={<Activity className="w-5 h-5" />}
-        />
-      </div>
-
-      {/* QUICK ACTIONS */}
-      <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
-        {[
-          {
-            name: "Projects",
-            href: "/projects",
-            icon: Folder,
-            color: "bg-[var(--color-secondary)]/10",
-            iconColor: "text-[var(--color-secondary)]",
-          },
-          {
-            name: "Donations",
-            href: "/donations",
-            icon: DollarSign,
-            color: "bg-[var(--color-base)]/10",
-            iconColor: "text-[var(--color-base)]",
-          },
-          {
-            name: "Photos",
-            href: "/photos",
-            icon: ImageIcon,
-            color: "bg-[var(--color-accent)]/10",
-            iconColor: "text-[var(--color-accent)]",
-          },
-        ].map((item) => (
-          <Link key={item.name} href={item.href}>
-            <Card
-              className={`flex items-center gap-4 p-6 ${item.color}
-        hover:shadow-xl hover:-translate-y-1 transition-all`}
-            >
-              <div
-                className={`w-12 h-12 rounded-full bg-white flex items-center justify-center ${item.iconColor}`}
-              >
-                <item.icon className="w-6 h-6" />
-              </div>
-
-              <div>
-                <p className="text-sm text-gray-500">Manage</p>
-                <h3 className="font-semibold text-lg">{item.name}</h3>
-              </div>
-            </Card>
-          </Link>
-        ))}
-      </div>
-
-      {/* ANALYTICS */}
+      {/* ANALYTICS FIRST */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        {/* CHART */}
+
         <Card className="lg:col-span-2">
           <div className="flex items-center justify-between mb-4">
             <h2 className="font-semibold">Donation Analytics</h2>
-            <Activity className="w-4 h-4 text-gray-500" />
+            <Badge text={"Live"}></Badge>
           </div>
 
-          <div className="h-[300px]">
+          <div className="h-[320px]">
             <ResponsiveContainer width="100%" height="100%">
               <BarChart data={donations}>
                 <XAxis dataKey="id" />
@@ -200,8 +151,8 @@ export default function Dashboard() {
                         index % 3 === 0
                           ? "var(--color-secondary)"
                           : index % 3 === 1
-                            ? "var(--color-base)"
-                            : "var(--color-accent)"
+                          ? "var(--color-base)"
+                          : "var(--color-accent)"
                       }
                     />
                   ))}
@@ -230,11 +181,107 @@ export default function Dashboard() {
               <span>Total Projects</span>
               <span className="font-medium">{projects.length}</span>
             </div>
+
+            <div className="flex justify-between">
+              <span>Partners</span>
+              <span className="font-medium">{partners.length}</span>
+            </div>
           </div>
         </Card>
+
       </div>
 
-      {/* RECENT DONATIONS */}
+      {/* STATS */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-5 gap-6">
+
+        <StatsCard
+          title="Projects"
+          value={projects.length}
+          className="bg-[var(--color-secondary)] text-white"
+          icon={<Folder className="w-5 h-5" />}
+        />
+
+        <StatsCard
+          title="Donations"
+          value={formattedTotal}
+          className="bg-[var(--color-base)] text-white"
+          icon={<DollarSign className="w-5 h-5" />}
+        />
+
+        <StatsCard
+          title="Donors"
+          value={filteredDonations.length}
+          className="bg-[var(--color-accent)] text-white"
+          icon={<Users className="w-5 h-5" />}
+        />
+
+        <StatsCard
+          title="Partners"
+          value={partners.length}
+          className="bg-[var(--color-secondary)] text-white"
+          icon={<Handshake className="w-5 h-5" />}
+        />
+
+        <StatsCard
+          title="Active"
+          value={projects.length}
+          className="bg-[var(--color-base)] text-white"
+          icon={<Activity className="w-5 h-5" />}
+        />
+
+      </div>
+
+ 
+
+      {/* QUICK ACTIONS AT BOTTOM */}
+      <div>
+        <h2 className="font-semibold mb-4">Quick Actions</h2>
+
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
+          {[
+            {
+              name: "Projects",
+              href: "/projects",
+              icon: Folder,
+              color: "bg-[var(--color-secondary)]/10",
+              iconColor: "text-[var(--color-secondary)]",
+            },
+            {
+              name: "Donations",
+              href: "/donations",
+              icon: DollarSign,
+              color: "bg-[var(--color-base)]/10",
+              iconColor: "text-[var(--color-base)]",
+            },
+            {
+              name: "Photos",
+              href: "/photos",
+              icon: ImageIcon,
+              color: "bg-[var(--color-accent)]/10",
+              iconColor: "text-[var(--color-accent)]",
+            },
+          ].map((item) => (
+            <Link key={item.name} href={item.href}>
+              <Card
+                className={`flex items-center gap-4 p-6 ${item.color}
+                hover:shadow-xl hover:-translate-y-1 transition-all`}
+              >
+                <div
+                  className={`w-12 h-12 rounded-full bg-white flex items-center justify-center ${item.iconColor}`}
+                >
+                  <item.icon className="w-6 h-6" />
+                </div>
+
+                <div>
+                  <p className="text-sm text-gray-500">Manage</p>
+                  <h3 className="font-semibold text-lg">{item.name}</h3>
+                </div>
+              </Card>
+            </Link>
+          ))}
+        </div>
+      </div>
+     {/* RECENT DONATIONS */}
       <Card>
         <div className="flex items-center justify-between mb-4">
           <h2 className="font-semibold">Recent Donations</h2>

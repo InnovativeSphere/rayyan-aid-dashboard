@@ -69,19 +69,36 @@ export const removePersonFromProject = (id: number) =>
 
 // ------------------- PROJECT IMAGES -------------------
 export const getProjectImages = (project_id: number) =>
-  api.get("/project_images", { params: { project_id } }).then((res) => res.data);
+  api
+    .get("/project_images", { params: { project_id } })
+    .then((res) => res.data);
+
+export const getAllProjectImages = () =>
+  api.get("/project_images").then((res) => res.data);
+
 export const addProjectImages = (project_id: number, images: any[]) =>
   api.post("/project_images", { project_id, images }).then((res) => res.data);
+
 export const removeProjectImage = (id: number) =>
   api.delete("/project_images", { data: { id } }).then((res) => res.data);
 
+
 // ------------------- DONATIONS -------------------
-export const getDonations = (project_id: number) =>
-  api.get("/donations", { params: { project_id } }).then((res) => res.data);
+// Fetch donations (optionally by project)
+export const getDonations = (project_id?: number) =>
+  api
+    .get("/donations", { params: project_id ? { project_id } : {} })
+    .then((res) => res.data);
+
+// Add a donation
 export const addDonation = (donation: any) =>
   api.post("/donations", donation).then((res) => res.data);
+
+// Update a donation
 export const updateDonation = (id: number, data: any) =>
   api.put("/donations", { id, ...data }).then((res) => res.data);
+
+// Delete a donation
 export const deleteDonation = (id: number) =>
   api.delete("/donations", { data: { id } }).then((res) => res.data);
 
@@ -95,3 +112,16 @@ export const getTotalDonationsPerProject = () =>
   api
     .get("/donations", { params: { custom: "total_per_project" } })
     .then((res) => res.data);
+
+// ------------------- CATEGORIES -------------------
+export const getCategories = () =>
+  api.get("/categories").then((res) => res.data);
+
+export const createCategory = (category: any) =>
+  api.post("/categories", category).then((res) => res.data);
+
+export const updateCategory = (id: number, data: any) =>
+  api.put("/categories", { id, ...data }).then((res) => res.data);
+
+export const deleteCategory = (id: number) =>
+  api.delete("/categories", { data: { id } }).then((res) => res.data);

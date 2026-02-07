@@ -1,8 +1,8 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { useDispatch } from "react-redux";
-import { AppDispatch } from "../redux/store";
+import { useDispatch, useSelector } from "react-redux";
+import { AppDispatch, RootState } from "../redux/store";
 import {
   updateProject,
   deleteProject,
@@ -22,6 +22,10 @@ export default function EditProjectModal({ isOpen, project, onClose }: Props) {
   const [description, setDescription] = useState("");
   const [startDate, setStartDate] = useState("");
   const [endDate, setEndDate] = useState("");
+  const [categoryId, setCategoryId] = useState<number | "">("");
+  const [targetDonation, setTargetDonation] = useState<number | "">("");
+
+  const { categories } = useSelector((state: RootState) => state.category);
 
   useEffect(() => {
     if (project) {
@@ -29,6 +33,8 @@ export default function EditProjectModal({ isOpen, project, onClose }: Props) {
       setDescription(project.description || "");
       setStartDate(project.start_date || "");
       setEndDate(project.end_date || "");
+      setCategoryId(project.category_id ?? "");
+      setTargetDonation(project.target_donation ?? "");
     }
   }, [project]);
 
@@ -43,6 +49,8 @@ export default function EditProjectModal({ isOpen, project, onClose }: Props) {
           description,
           start_date: startDate || undefined,
           end_date: endDate || undefined,
+          category_id: categoryId === "" ? undefined : Number(categoryId),
+          target_donation: targetDonation === "" ? undefined : Number(targetDonation),
         },
       })
     );
@@ -59,7 +67,7 @@ export default function EditProjectModal({ isOpen, project, onClose }: Props) {
 
   return (
     <div className="fixed inset-0 bg-black/40 backdrop-blur-sm flex items-center justify-center z-50 p-4">
-      <div className="bg-white w-full max-w-md p-6 rounded-2xl shadow-xl space-y-5 animate-fadeIn">
+      <div className="bg-white w-full max-w-md p-6 rounded-2xl shadow-xl space-y-4 animate-fadeIn">
         <h2 className="text-2xl font-bold text-[var(--color-base)] font-figtree">
           Edit Project
         </h2>
@@ -67,14 +75,14 @@ export default function EditProjectModal({ isOpen, project, onClose }: Props) {
         <input
           value={title}
           onChange={(e) => setTitle(e.target.value)}
-          className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-[var(--color-accent)] focus:outline-none transition"
+          className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-[var(--color-accent)] focus:outline-none transition text-sm"
           placeholder="Project Title"
         />
 
         <textarea
           value={description}
           onChange={(e) => setDescription(e.target.value)}
-          className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-[var(--color-accent)] focus:outline-none transition"
+          className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-[var(--color-accent)] focus:outline-none transition text-sm"
           placeholder="Description"
         />
 
@@ -83,20 +91,47 @@ export default function EditProjectModal({ isOpen, project, onClose }: Props) {
             type="date"
             value={startDate}
             onChange={(e) => setStartDate(e.target.value)}
-            className="border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-[var(--color-accent)] focus:outline-none transition"
+            className="border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-[var(--color-accent)] focus:outline-none transition text-sm"
           />
           <input
             type="date"
             value={endDate}
             onChange={(e) => setEndDate(e.target.value)}
-            className="border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-[var(--color-accent)] focus:outline-none transition"
+            className="border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-[var(--color-accent)] focus:outline-none transition text-sm"
           />
+        </div>
+
+        <div className="grid grid-cols-2 gap-4">
+          <input
+            type="number"
+            value={targetDonation}
+            onChange={(e) =>
+              setTargetDonation(e.target.value === "" ? "" : Number(e.target.value))
+            }
+            placeholder="Target Donation"
+            className="border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-[var(--color-accent)] focus:outline-none transition text-sm"
+          />
+
+          <select
+            value={categoryId}
+            onChange={(e) =>
+              setCategoryId(e.target.value === "" ? "" : Number(e.target.value))
+            }
+            className="border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-[var(--color-accent)] focus:outline-none transition text-sm"
+          >
+            <option value="">Select Category</option>
+            {categories?.map((cat) => (
+              <option key={cat.id} value={cat.id}>
+                {cat.name}
+              </option>
+            ))}
+          </select>
         </div>
 
         <div className="flex justify-between pt-4">
           <button
             onClick={handleDelete}
-            className="px-4 py-2 rounded-lg bg-red-600 text-white hover:brightness-110 transition-all duration-300"
+            className="px-4 py-2 rounded-lg bg-red-600 text-white hover:brightness-110 transition-all duration-300 text-sm"
           >
             Delete
           </button>
@@ -104,14 +139,14 @@ export default function EditProjectModal({ isOpen, project, onClose }: Props) {
           <div className="flex gap-3">
             <button
               onClick={onClose}
-              className="px-4 py-2 rounded-lg border hover:bg-gray-100 transition"
+              className="px-4 py-2 rounded-lg border hover:bg-gray-100 transition text-sm"
             >
               Cancel
             </button>
 
             <button
               onClick={handleUpdate}
-              className="px-4 py-2 rounded-lg bg-[var(--color-base)] text-white font-semibold hover:brightness-110 hover:scale-[1.03] transition-all duration-300"
+              className="px-4 py-2 rounded-lg bg-[var(--color-base)] text-white font-semibold hover:brightness-110 hover:scale-[1.03] transition-all duration-300 text-sm"
             >
               Save
             </button>

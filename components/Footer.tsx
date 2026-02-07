@@ -5,14 +5,14 @@ import React from "react";
 
 const Footer = () => {
   return (
-    <footer className="bg-[var(--color-blak)] mt-24 text-[var(--color-white)] px-6 py-10">
-      <div className="max-w-[1320px] mx-auto grid md:grid-cols-3 gap-8">
+    <footer className="bg-(--color-blak) mt-24 text-white px-6 py-10">
+      <div className="max-w-330 mx-auto grid md:grid-cols-3 gap-8">
         {/* Brand / About */}
         <div>
-          <h4 className="font-heading text-xl text-[var(--color-base)] mb-4">
+          <h4 className="font-heading text-xl text-(--color-base) mb-4">
             Rayyan Aid
           </h4>
-          <p className="font-body text-[var(--color-gray)] leading-7">
+          <p className="font-body text-(--color-gray) leading-7">
             Making an impact, one donation at a time. Your support drives
             meaningful change and helps communities thrive.
           </p>

@@ -2,11 +2,12 @@
 import { configureStore } from "@reduxjs/toolkit";
 import authReducer from "./slices/authSlice";
 import projectsReducer from "./slices/projectsSlice";
-import donationsReducer from "./slices/donationSlice"; // fixed typo
+import donationsReducer from "./slices/donationSlice"; 
 import peopleReducer from "./slices/peopleSlice";
-import projectPeopleReducer from "./slices/projectPeopleSlice";
+// import projectPeopleReducer from "./slices/projectPeopleSlice";
 import projectImagesReducer from "./slices/ProjectImagesSlice";
 import partnersReducer from "./slices/partnersSlice";
+import categoriesReducer from "./slices/categoriesSlice";
 
 export const store = configureStore({
   reducer: {
@@ -14,9 +15,10 @@ export const store = configureStore({
     projects: projectsReducer,
     donations: donationsReducer,
     people: peopleReducer,
-    projectPeople: projectPeopleReducer,
+    // projectPeople: projectPeopleReducer,
     projectImages: projectImagesReducer,
     partners: partnersReducer,
+    category: categoriesReducer,
   },
 });
 

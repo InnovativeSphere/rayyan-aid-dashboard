@@ -1,5 +1,5 @@
 import { verifyToken } from "../../lib/auth";
-import ProjectsController from '../../../backend/controllers/projectsController'
+import ProjectsController from "../../../backend/controllers/projectsController";
 
 export default async function handler(req, res) {
   try {
@@ -20,8 +20,27 @@ export default async function handler(req, res) {
         const user = verifyToken(req);
         if (!user) return res.status(401).json({ error: "Unauthorized" });
 
-        const body = req.body;
-        const newProject = await ProjectsController.createProject(body);
+        const {
+          title,
+          description,
+          start_date,
+          end_date,
+          target_donation,
+          category_id,
+        } = req.body;
+
+        if (!title)
+          return res.status(400).json({ error: "Title is required" });
+
+        const newProject = await ProjectsController.createProject({
+          title,
+          description,
+          start_date,
+          end_date,
+          target_donation,
+          category_id,
+        });
+
         return res
           .status(201)
           .json({ message: "Project created", id: newProject });
@@ -32,11 +51,28 @@ export default async function handler(req, res) {
         const user = verifyToken(req);
         if (!user) return res.status(401).json({ error: "Unauthorized" });
 
-        const { id, ...updateData } = req.body;
+        const {
+          id,
+          title,
+          description,
+          start_date,
+          end_date,
+          target_donation,
+          category_id,
+        } = req.body;
+
         if (!id)
           return res.status(400).json({ error: "Project ID is required" });
 
-        const updated = await ProjectsController.updateProject(id, updateData);
+        const updated = await ProjectsController.updateProject(id, {
+          title,
+          description,
+          start_date,
+          end_date,
+          target_donation,
+          category_id,
+        });
+
         if (!updated)
           return res
             .status(404)
@@ -52,11 +88,11 @@ export default async function handler(req, res) {
         const user = verifyToken(req);
         if (!user) return res.status(401).json({ error: "Unauthorized" });
 
-        const { id: deleteId } = req.body;
-        if (!deleteId)
+        const { id } = req.body;
+        if (!id)
           return res.status(400).json({ error: "Project ID is required" });
 
-        const deleted = await ProjectsController.deleteProject(deleteId);
+        const deleted = await ProjectsController.deleteProject(id);
         if (!deleted)
           return res.status(404).json({ error: "Project not found" });
 

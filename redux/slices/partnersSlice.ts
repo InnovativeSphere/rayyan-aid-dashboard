@@ -8,6 +8,7 @@ export interface Partner {
   website_url?: string | null;
   created_at?: string;
   updated_at?: string;
+  
 }
 
 interface PartnersState {
@@ -92,10 +93,13 @@ const partnersSlice = createSlice({
         state.status = "loading";
         state.error = null;
       })
-      .addCase(fetchPartners.fulfilled, (state, action: PayloadAction<Partner[]>) => {
-        state.status = "succeeded";
-        state.partners = action.payload;
-      })
+      .addCase(
+        fetchPartners.fulfilled,
+        (state, action: PayloadAction<Partner[]>) => {
+          state.status = "succeeded";
+          state.partners = action.payload;
+        },
+      )
       .addCase(fetchPartners.rejected, (state, action) => {
         state.status = "failed";
         state.error = action.payload || "Failed to fetch partners";
@@ -106,10 +110,13 @@ const partnersSlice = createSlice({
         state.status = "loading";
         state.error = null;
       })
-      .addCase(createPartner.fulfilled, (state, action: PayloadAction<Partner>) => {
-        state.status = "succeeded";
-        state.partners.push(action.payload);
-      })
+      .addCase(
+        createPartner.fulfilled,
+        (state, action: PayloadAction<Partner>) => {
+          state.status = "succeeded";
+          state.partners.push(action.payload);
+        },
+      )
       .addCase(createPartner.rejected, (state, action) => {
         state.status = "failed";
         state.error = action.payload || "Failed to create partner";
@@ -122,7 +129,9 @@ const partnersSlice = createSlice({
       })
       .addCase(updatePartner.fulfilled, (state, action) => {
         state.status = "succeeded";
-        const index = state.partners.findIndex((p) => p.id === action.payload.id);
+        const index = state.partners.findIndex(
+          (p) => p.id === action.payload.id,
+        );
         if (index !== -1) state.partners[index] = action.payload.partner;
       })
       .addCase(updatePartner.rejected, (state, action) => {
@@ -135,10 +144,15 @@ const partnersSlice = createSlice({
         state.status = "loading";
         state.error = null;
       })
-      .addCase(deletePartner.fulfilled, (state, action: PayloadAction<number>) => {
-        state.status = "succeeded";
-        state.partners = state.partners.filter((p) => p.id !== action.payload);
-      })
+      .addCase(
+        deletePartner.fulfilled,
+        (state, action: PayloadAction<number>) => {
+          state.status = "succeeded";
+          state.partners = state.partners.filter(
+            (p) => p.id !== action.payload,
+          );
+        },
+      )
       .addCase(deletePartner.rejected, (state, action) => {
         state.status = "failed";
         state.error = action.payload || "Failed to delete partner";
