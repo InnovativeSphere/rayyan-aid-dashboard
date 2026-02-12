@@ -2,7 +2,7 @@
 
 const Loader = () => {
   return (
-    <div className="flex items-center justify-center h-64">
+    <div className="flex items-center justify-center h-14">
       <div className="flex space-x-2">
         {[0, 1, 2].map((i) => (
           <div

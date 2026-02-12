@@ -3,7 +3,7 @@ import axios from "axios";
 // ------------------- AXIOS INSTANCE -------------------
 export const api = axios.create({
   baseURL: "/api",
-  withCredentials: true, // optional: if you also use cookies
+  withCredentials: true,
 });
 
 // ------------------- AUTH TOKEN -------------------
@@ -20,6 +20,34 @@ if (typeof window !== "undefined") {
   const token = localStorage.getItem("token");
   if (token) setAuthToken(token);
 }
+
+// ------------------- CLOUD UPLOAD -------------------
+// ✅ extended to support partners
+export type UploadImageType =
+  | "avatar"
+  | "project_before"
+  | "project_after"
+  | "partner";
+
+export interface UploadResponse {
+  url: string;
+  type: UploadImageType;
+}
+
+export const uploadImage = async (
+  file: File,
+  type: UploadImageType,
+): Promise<UploadResponse> => {
+  const formData = new FormData();
+  formData.append("file", file);
+  formData.append("type", type);
+
+  const res = await api.post("/cloud", formData, {
+    headers: { "Content-Type": "multipart/form-data" },
+  });
+
+  return res.data;
+};
 
 // ------------------- USERS -------------------
 export const getUsers = () => api.get("/users").then((res) => res.data);
@@ -82,27 +110,19 @@ export const addProjectImages = (project_id: number, images: any[]) =>
 export const removeProjectImage = (id: number) =>
   api.delete("/project_images", { data: { id } }).then((res) => res.data);
 
-
 // ------------------- DONATIONS -------------------
-// Fetch donations (optionally by project)
 export const getDonations = (project_id?: number) =>
   api
     .get("/donations", { params: project_id ? { project_id } : {} })
     .then((res) => res.data);
 
-// Add a donation
 export const addDonation = (donation: any) =>
   api.post("/donations", donation).then((res) => res.data);
-
-// Update a donation
 export const updateDonation = (id: number, data: any) =>
   api.put("/donations", { id, ...data }).then((res) => res.data);
-
-// Delete a donation
 export const deleteDonation = (id: number) =>
   api.delete("/donations", { data: { id } }).then((res) => res.data);
 
-// Custom donation endpoints
 export const getDonationsGroupedByAmount = () =>
   api
     .get("/donations", { params: { custom: "group_by_amount" } })
@@ -116,12 +136,9 @@ export const getTotalDonationsPerProject = () =>
 // ------------------- CATEGORIES -------------------
 export const getCategories = () =>
   api.get("/categories").then((res) => res.data);
-
 export const createCategory = (category: any) =>
   api.post("/categories", category).then((res) => res.data);
-
 export const updateCategory = (id: number, data: any) =>
   api.put("/categories", { id, ...data }).then((res) => res.data);
-
 export const deleteCategory = (id: number) =>
   api.delete("/categories", { data: { id } }).then((res) => res.data);

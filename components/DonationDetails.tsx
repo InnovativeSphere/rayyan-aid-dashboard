@@ -37,10 +37,20 @@ export default function DonationDetails({ donationId, onClose }: DonationDetails
     }
   }, [donation]);
 
+  if (status === "loading") {
+    return (
+      <div className="fixed inset-0 grid place-items-center bg-black/40">
+        <div className="bg-white px-6 py-4 rounded-lg shadow text-sm">
+          Loading donation…
+        </div>
+      </div>
+    );
+  }
+
   if (!donation) {
     return (
       <div className="fixed inset-0 grid place-items-center bg-black/40">
-        <div className="bg-white p-6 rounded-xl shadow text-center font-medium">
+        <div className="bg-white px-6 py-4 rounded-lg shadow text-sm">
           Donation not found
         </div>
       </div>
@@ -67,82 +77,70 @@ export default function DonationDetails({ donationId, onClose }: DonationDetails
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm p-4 animate-fadeIn">
-      <div className="bg-white w-full max-w-md rounded-2xl shadow-2xl p-6 space-y-5 animate-scaleIn sm:p-4">
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm p-3 animate-fadeIn">
+      <div className="bg-white w-full max-w-sm rounded-xl shadow-xl p-4 space-y-4 animate-scaleIn">
 
-        {/* Header */}
         <div className="flex justify-between items-center">
-          <h2 className="text-xl sm:text-lg font-bold text-[var(--color-base)]">
+          <h2 className="text-lg font-bold text-[var(--color-base)]">
             Donation Details
           </h2>
-          <button
-            onClick={onClose}
-            className="p-2 rounded-full hover:bg-[var(--color-gray)] transition-transform duration-300 hover:scale-110"
-          >
-            <FaTimes className="text-[var(--color-base)] w-5 h-5 sm:w-4 sm:h-4" />
+          <button onClick={onClose} className="p-1">
+            <FaTimes className="w-4 h-4 text-[var(--color-base)]" />
           </button>
         </div>
 
-        {/* Meta Info */}
-        <div className="text-sm text-[var(--color-gray)] space-y-1 sm:text-xs">
+        <div className="text-xs text-[var(--color-gray)] space-y-1">
           <p>Project: {donation.project_title || donation.project_id}</p>
           <p>Date: {new Date(donation.donation_date).toLocaleDateString()}</p>
         </div>
 
-        {/* Actions */}
-        <div className="flex gap-2">
-          {/* Edit */}
+        <div className="flex gap-2 text-xs">
           <button
             onClick={() => setIsEditing(true)}
-            className="flex items-center gap-2 bg-blue-600 text-white px-3 py-1 rounded-lg hover:bg-blue-700 transition transform hover:scale-105 hover:ring-2 hover:ring-blue-400"
+            className="flex items-center gap-1 bg-blue-600 text-white px-2 py-1 rounded"
           >
             <FaEdit /> Edit
           </button>
-
-          {/* Save */}
           <button
             onClick={handleSave}
-            className="flex items-center gap-2 bg-green-600 text-white px-3 py-1 rounded-lg hover:bg-green-700 transition transform hover:scale-105 hover:ring-2 hover:ring-green-400"
+            className="flex items-center gap-1 bg-green-600 text-white px-2 py-1 rounded"
           >
             <FaSave /> Save
           </button>
-
-          {/* Delete */}
           <button
             onClick={handleDelete}
-            className="flex items-center gap-2 bg-red-600 text-white px-3 py-1 rounded-lg hover:bg-red-700 transition transform hover:scale-105 hover:ring-2 hover:ring-red-400"
+            className="flex items-center gap-1 bg-red-600 text-white px-2 py-1 rounded"
           >
             <FaTrash /> Delete
           </button>
         </div>
 
-        {/* Fields */}
-        <div className="space-y-4">
+        <div className="space-y-3 text-sm">
           <div>
-            <label className="text-sm font-medium">Donor Name</label>
+            <label className="text-xs font-medium">Donor Name</label>
             {isEditing ? (
               <input
                 value={form.donor_name}
                 onChange={(e) => setForm({ ...form, donor_name: e.target.value })}
-                className="w-full border p-2 rounded-lg focus:ring-2 focus:ring-blue-400 transition"
+                className="w-full border p-2 rounded-lg"
               />
             ) : (
-              <p className="mt-1 text-[var(--color-base)]">{donation.donor_name || "Anonymous"}</p>
+              <p className="mt-1">{donation.donor_name || "Anonymous"}</p>
             )}
           </div>
 
           <div>
-            <label className="text-sm font-medium">Amount</label>
+            <label className="text-xs font-medium">Amount</label>
             {isEditing ? (
               <input
                 type="number"
                 value={form.amount}
                 onChange={(e) => setForm({ ...form, amount: e.target.value })}
-                className="w-full border p-2 rounded-lg focus:ring-2 focus:ring-blue-400 transition"
+                className="w-full border p-2 rounded-lg"
               />
             ) : (
               <p className="mt-1 font-semibold text-[var(--color-accent)]">
-                ₦{Number(donation.amount).toLocaleString(undefined, { maximumFractionDigits: 2 })}
+                ₦{Number(donation.amount).toLocaleString()}
               </p>
             )}
           </div>

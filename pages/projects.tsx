@@ -11,7 +11,6 @@ import CreateProjectModal from "../components/CreateProjectModal";
 import EditProjectModal from "../components/EditProjectModal";
 
 import Loader from "@/components/Loader";
-import StatsCard from "@/components/StatusCard";
 
 import {
   PencilIcon,
@@ -33,7 +32,7 @@ export default function ProjectsPage() {
   const [detailsOpen, setDetailsOpen] = useState(false);
   const [selectedProject, setSelectedProject] = useState<Project | null>(null);
   const [activeMenu, setActiveMenu] = useState<number | null>(null);
-  const [filter, setFilter] = useState<string>("all");
+  const [filter, setFilter] = useState<string>("All");
 
   useEffect(() => {
     dispatch(fetchProjects());
@@ -41,7 +40,7 @@ export default function ProjectsPage() {
   }, [dispatch]);
 
   const filteredProjects = useMemo(() => {
-    if (filter === "all") return projects;
+    if (filter === "All") return projects;
     return projects.filter(p => p.category_name === filter);
   }, [projects, filter]);
 
@@ -51,49 +50,52 @@ export default function ProjectsPage() {
     "bg-[var(--color-secondary)]",
   ];
 
-  const formatDate = (dateStr?: string) => {
-    if (!dateStr) return null;
-    return dateStr.split("T")[0]; // YYYY-MM-DD
-  };
+  const formatDate = (dateStr?: string) => dateStr?.split("T")[0] || null;
 
   const getStatusBadge = (project: Project) => {
     const now = new Date();
     const end = project.end_date ? new Date(project.end_date) : null;
     if (end && end < now) {
       return (
-        <div className="inline-flex items-center gap-1 text-xs text-red-500 font-semibold">
-          <XCircleIcon className="w-4 h-4" /> Completed
+        <div className="inline-flex items-center gap-1 text-xs text-red-500 font-semibold whitespace-nowrap">
+          <XCircleIcon className="w-4 h-4 flex-shrink-0" /> Completed
         </div>
       );
     } else {
       return (
-        <div className="inline-flex items-center gap-1 text-xs text-blue-800 font-semibold">
-          <CheckCircleIcon className="w-4 h-4" /> Ongoing
+        <div className="inline-flex items-center gap-1 text-xs text-blue-800 font-semibold whitespace-nowrap">
+          <CheckCircleIcon className="w-4 h-4 flex-shrink-0" /> Ongoing
         </div>
       );
     }
   };
 
   return (
-    <div className="p-8">
+    <div className="p-4 sm:p-6 md:p-8 flex flex-col gap-6">
 
       {/* Header */}
-      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6 gap-4">
-        <h1 className="text-2xl font-semibold tracking-tight">Projects</h1>
-        <div className="flex items-center gap-3">
-          <select
-            value={filter}
-            onChange={(e) => setFilter(e.target.value)}
-            className="rounded-lg border px-3 py-1 text-sm border-gray-300 bg-white"
-          >
-            <option value="all">All Categories</option>
-            {categories.map(cat => (
-              <option key={cat.id} value={cat.name}>{cat.name}</option>
-            ))}
-          </select>
+      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+        <h1 className="text-2xl sm:text-3xl font-semibold tracking-tight">Projects</h1>
+
+        <div className="flex flex-col sm:flex-row items-start sm:items-center gap-3 w-full sm:w-auto">
+          {/* Filter */}
+          <div className="flex items-center gap-2 w-full sm:w-auto">
+            <span className="text-sm font-medium text-gray-700">Filter:</span>
+            <select
+              value={filter}
+              onChange={(e) => setFilter(e.target.value)}
+              className="w-full sm:w-auto border rounded-lg px-3 py-1 focus:outline-none focus:ring-2 focus:ring-[var(--color-accent)] transition"
+            >
+              <option value="All">All Projects</option>
+              {categories.map(cat => (
+                <option key={cat.id} value={cat.name}>{cat.name}</option>
+              ))}
+            </select>
+          </div>
+
           <button
             onClick={() => setCreateOpen(true)}
-            className="bg-[var(--color-base)] text-white px-4 py-2 rounded hover:brightness-110 transition"
+            className="bg-[var(--color-base)] text-white px-4 py-2 rounded hover:brightness-110 transition w-full sm:w-auto"
           >
             + Create Project
           </button>
@@ -108,81 +110,87 @@ export default function ProjectsPage() {
       )}
 
       {/* Projects Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
         {filteredProjects.map((project, index) => {
           const cardColor = ringColors[index % ringColors.length];
 
           return (
             <div
               key={project.id}
-              className={`relative ${cardColor} rounded-2xl shadow p-5 flex flex-col justify-between hover:shadow-2xl transition-all duration-300 text-white min-h-[180px]`}
+              className="bg-white rounded-2xl border shadow-sm hover:shadow-xl hover:-translate-y-1 transition-all p-5 flex flex-col sm:flex-row justify-between gap-4 min-h-[130px]"
             >
-              <div className="flex justify-between items-start">
-                <h2 className="text-lg font-semibold">{project.title}</h2>
+              {/* Left: Icon + Info */}
+              <div className="flex items-start sm:items-center gap-4 flex-1 min-w-0">
+                <div
+                  className={`w-12 h-12 rounded-full ${cardColor} flex items-center justify-center text-white flex-shrink-0`}
+                >
+                  <TagIcon className="w-6 h-6" />
+                </div>
 
-                {/* Menu */}
+                <div className="flex-1 min-w-0">
+                  <p className="text-xs text-gray-500 truncate">{project.category_name || "Uncategorized"}</p>
+                  <h3 className="font-semibold text-lg break-words">{project.title}</h3>
+
+                  <div className="mt-1 flex flex-wrap items-center gap-3 text-xs text-gray-400">
+                    {project.start_date && (
+                      <span className="flex items-center gap-1 whitespace-nowrap">
+                        <CalendarIcon className="w-3 h-3 flex-shrink-0" />
+                        {formatDate(project.start_date)}
+                      </span>
+                    )}
+
+                    {project.target_donation !== undefined && (
+                      <span className="flex items-center gap-1 whitespace-nowrap">
+                        <CurrencyDollarIcon className="w-3 h-3 flex-shrink-0" />
+                        ₦{project.target_donation.toLocaleString()}
+                      </span>
+                    )}
+                  </div>
+                </div>
+              </div>
+
+              {/* Right: Status + Menu */}
+              <div className="flex items-center gap-3 flex-shrink-0 mt-3 sm:mt-0">
+                {getStatusBadge(project)}
+
                 <div className="relative">
                   <button
                     onClick={() =>
                       setActiveMenu(activeMenu === project.id ? null : project.id)
                     }
-                    className="w-8 h-8 text-white rounded-full flex items-center justify-center hover:bg-white/20 transition"
+                    className="w-8 h-8 rounded-full flex items-center justify-center hover:bg-gray-100 transition"
                   >
                     ⋮
                   </button>
 
                   {activeMenu === project.id && (
-                    <div className="absolute right-0 mt-2 w-40 bg-white rounded-xl shadow-xl border overflow-hidden animate-scaleIn z-20">
+                    <div className="absolute right-0 mt-2 w-44 bg-white rounded-xl shadow-xl border overflow-hidden animate-scaleIn z-20">
                       <button
                         onClick={() => {
                           setSelectedProject(project);
                           setDetailsOpen(true);
                           setActiveMenu(null);
                         }}
-                        className="w-full text-left px-4 py-2 hover:bg-blue-50 flex items-center gap-2 transition-colors text-black"
+                        className="w-full text-left px-4 py-2 hover:bg-gray-50 flex items-center gap-2 text-sm"
                       >
-                        <InformationCircleIcon className="w-4 h-4" /> Details
+                        <InformationCircleIcon className="w-4 h-4" />
+                        Details
                       </button>
+
                       <button
                         onClick={() => {
                           setSelectedProject(project);
                           setEditOpen(true);
                           setActiveMenu(null);
                         }}
-                        className="w-full text-left px-4 py-2 hover:bg-blue-50 flex items-center gap-2 transition-colors text-black"
+                        className="w-full text-left px-4 py-2 hover:bg-gray-50 flex items-center gap-2 text-sm"
                       >
-                        <PencilIcon className="w-4 h-4" /> Edit
+                        <PencilIcon className="w-4 h-4" />
+                        Edit
                       </button>
                     </div>
                   )}
                 </div>
-              </div>
-
-              {/* Project Info */}
-              <div className="mt-3 text-sm space-y-1">
-                {project.description && <p>{project.description}</p>}
-                {project.category_name && (
-                  <div className="flex items-center gap-1">
-                    <TagIcon className="w-4 h-4" /> {project.category_name}
-                  </div>
-                )}
-                {project.start_date && (
-                  <div className="flex items-center gap-1">
-                    <CalendarIcon className="w-4 h-4" /> {formatDate(project.start_date)}
-                  </div>
-                )}
-                {project.end_date && (
-                  <div className="flex items-center gap-1">
-                    <CalendarIcon className="w-4 h-4" /> {formatDate(project.end_date)}
-                  </div>
-                )}
-                {project.target_donation !== undefined && (
-                  <div className="flex items-center gap-1">
-                    <CurrencyDollarIcon className="w-4 h-4" /> ₦{project.target_donation.toLocaleString()}
-                  </div>
-                )}
-                {/* Status Badge */}
-                <div className="mt-2">{getStatusBadge(project)}</div>
               </div>
             </div>
           );
@@ -202,9 +210,9 @@ export default function ProjectsPage() {
 
       {/* Details Modal */}
       {detailsOpen && selectedProject && (
-        <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50">
+        <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50 p-4">
           <div className="bg-white rounded-2xl shadow-xl p-6 max-w-md w-full animate-fadeIn">
-            <h2 className="text-xl font-bold mb-2">{selectedProject.title}</h2>
+            <h2 className="text-xl font-bold mb-2 break-words">{selectedProject.title}</h2>
             <p className="text-gray-600 mb-4">{selectedProject.description || "No description"}</p>
             <div className="text-sm text-gray-400 space-y-1">
               {selectedProject.start_date && <p>Start: {formatDate(selectedProject.start_date)}</p>}
@@ -214,7 +222,7 @@ export default function ProjectsPage() {
             </div>
             <button
               onClick={() => setDetailsOpen(false)}
-              className="mt-4 bg-[var(--color-base)] text-white px-4 py-2 rounded hover:brightness-110 transition"
+              className="mt-4 bg-[var(--color-base)] text-white px-4 py-2 rounded hover:brightness-110 transition w-full"
             >
               Close
             </button>

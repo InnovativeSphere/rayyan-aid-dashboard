@@ -29,9 +29,7 @@ export default function DonationAnalyticsModal({
   projectTitle,
 }: Props) {
   const dispatch = useDispatch<AppDispatch>();
-  const { donations } = useSelector(
-    (state: RootState) => state.donations
-  );
+  const { donations } = useSelector((state: RootState) => state.donations);
 
   useEffect(() => {
     if (isOpen && projectId) {
@@ -48,9 +46,7 @@ export default function DonationAnalyticsModal({
 
   return (
     <div className="fixed inset-0 bg-black/40 backdrop-blur-sm flex items-center justify-center z-50 animate-fadeIn">
-
       <div className="bg-white w-full max-w-3xl p-6 rounded-xl shadow-xl animate-scaleIn relative">
-
         <button
           onClick={onClose}
           className="absolute top-3 right-3 text-gray-400 hover:text-black hover:rotate-90 transition-all"
@@ -58,18 +54,12 @@ export default function DonationAnalyticsModal({
           ✕
         </button>
 
-        <h2 className="text-2xl font-bold mb-1">
-          Donation Analytics
-        </h2>
+        <h2 className="text-2xl font-bold mb-1">Donation Analytics</h2>
 
-        <p className="text-gray-500 mb-6">
-          {projectTitle}
-        </p>
+        <p className="text-gray-500 mb-6">{projectTitle}</p>
 
         {chartData.length === 0 && (
-          <p className="text-gray-500">
-            No donations yet.
-          </p>
+          <p className="text-gray-500">No donations yet.</p>
         )}
 
         {chartData.length > 0 && (
@@ -91,7 +81,6 @@ export default function DonationAnalyticsModal({
             </ResponsiveContainer>
           </div>
         )}
-
       </div>
     </div>
   );

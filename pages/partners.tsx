@@ -4,15 +4,17 @@ import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { AppDispatch, RootState } from "../redux/store";
 
-import { fetchPartners, Partner } from "../redux/slices/partnersSlice";
+import {
+  fetchPartners,
+  deletePartner,
+  Partner,
+} from "../redux/slices/partnersSlice";
 
 import CreatePartnerModal from "../components/CreatePartnerModal";
 import EditPartnerModal from "../components/EditPartnerModal";
-
 import Loader from "@/components/Loader";
-import Badge from "@/components/Badge";
 
-import { PencilIcon, LinkIcon } from "@heroicons/react/24/outline";
+import { Pencil, Link, Trash2 } from "lucide-react";
 
 export default function PartnersPage() {
   const dispatch = useDispatch<AppDispatch>();
@@ -23,130 +25,150 @@ export default function PartnersPage() {
   const [createOpen, setCreateOpen] = useState(false);
   const [editOpen, setEditOpen] = useState(false);
   const [selectedPartner, setSelectedPartner] = useState<Partner | null>(null);
-  const [activeMenu, setActiveMenu] = useState<number | null>(null);
 
+  /* INITIAL FETCH */
   useEffect(() => {
     dispatch(fetchPartners());
   }, [dispatch]);
 
+  /* REFRESH AFTER CREATE / EDIT / DELETE */
+  useEffect(() => {
+    if (!createOpen && !editOpen) {
+      dispatch(fetchPartners());
+    }
+  }, [createOpen, editOpen, dispatch]);
+
   const openEdit = (partner: Partner) => {
     setSelectedPartner(partner);
     setEditOpen(true);
-    setActiveMenu(null);
   };
 
-  const cardColors = [
-    "bg-[var(--color-secondary)]",
-    "bg-[var(--color-base)]",
-    "bg-[var(--color-gray)]",
-  ];
+  const handleDelete = async (partner: Partner) => {
+    if (!confirm(`Delete partner "${partner.name}"?`)) return;
+
+    await dispatch(deletePartner(partner.id));
+    dispatch(fetchPartners());
+  };
 
   return (
     <div className="p-8 space-y-8">
 
-      {/* Header */}
+      {/* HEADER */}
       <div className="flex justify-between items-center">
-        <h1 className="text-3xl font-bold tracking-tight font-figtree">
+        <h1 className="text-3xl font-bold text-[var(--color-base)]">
           Partners
         </h1>
+
         <button
           onClick={() => setCreateOpen(true)}
-          className="bg-[var(--color-base)] text-white px-5 py-2 rounded-lg hover:brightness-110 hover:scale-[1.02] transition-all duration-300 font-semibold"
+          className="flex items-center gap-2 bg-[var(--color-accent)] text-white
+                     px-5 py-2 rounded-lg shadow
+                     hover:shadow-md hover:scale-[1.02]
+                     transition-all duration-300 font-medium"
         >
           + Add Partner
         </button>
       </div>
 
-      {/* Loader / Error */}
+      {/* LOADER / ERROR */}
       {status === "loading" && (
         <div className="flex justify-center py-20">
           <Loader />
         </div>
       )}
-      {status === "failed" && <p className="text-red-500">{error}</p>}
 
-      {/* Partners Grid */}
+      {status === "failed" && (
+        <p className="text-red-500">{error}</p>
+      )}
+
+      {!partners.length && status !== "loading" && (
+        <p className="text-gray-500">No partners found.</p>
+      )}
+
+      {/* PARTNERS GRID */}
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
-        {partners.map((partner, index) => {
-          const cardColor = cardColors[index % cardColors.length];
-
-          return (
-            <div
-              key={partner.id}
-              className={`relative ${cardColor} rounded-2xl shadow p-6 flex items-center gap-4
-                hover:shadow-2xl transition-all duration-300 min-h-[140px]`}
-            >
-              {/* Optional Badge */}
-              {/* {partner.status && (
-                <div className="absolute top-3 left-3 z-10">
-                  <Badge text={partner.} />
-                </div>
-              )} */}
-
-              {/* Logo */}
+        {partners.map((partner) => (
+          <div
+            key={partner.id}
+            className="bg-white rounded-2xl border shadow-sm
+                       hover:shadow-lg transition-all
+                       p-5 flex flex-col justify-between gap-3 min-h-[140px]"
+          >
+            {/* TOP ROW */}
+            <div className="flex items-center gap-4">
               {partner.logo_url ? (
                 <img
                   src={partner.logo_url}
                   alt={partner.name}
-                  className="w-16 h-16 rounded-full object-cover border border-gray-200"
+                  className="w-16 h-16 rounded-full object-cover
+                             border border-gray-200"
                 />
               ) : (
-                <div className="w-16 h-16 rounded-full bg-gray-300 flex items-center justify-center text-white font-bold text-lg">
+                <div className="w-16 h-16 rounded-full bg-gray-300
+                                flex items-center justify-center
+                                text-white font-bold text-lg">
                   ?
                 </div>
               )}
 
-              {/* Name and Website */}
-              <div className="flex-1 flex flex-col overflow-hidden text-white">
-                <h2 className="text-lg font-semibold break-words">{partner.name}</h2>
+              <div className="flex-1 overflow-hidden">
+                <h2 className="text-lg font-semibold text-gray-800 truncate">
+                  {partner.name}
+                </h2>
+
                 {partner.website_url && (
                   <a
                     href={partner.website_url}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="flex items-center text-sm text-white/80 hover:text-white transition truncate gap-1"
+                    className="flex items-center gap-1 text-sm
+                               text-gray-500 hover:text-gray-800 truncate"
                   >
-                    <LinkIcon className="w-4 h-4" /> {partner.website_url}
+                    <Link className="w-4 h-4" />
+                    {partner.website_url}
                   </a>
                 )}
               </div>
-
-              {/* Menu */}
-              <div className="relative">
-                <button
-                  onClick={() =>
-                    setActiveMenu(activeMenu === partner.id ? null : partner.id)
-                  }
-                  className="w-8 h-8 text-white rounded-full flex items-center justify-center hover:bg-white/20 transition"
-                >
-                  ⋮
-                </button>
-
-                {activeMenu === partner.id && (
-                  <div className="absolute right-0 mt-2 w-36 bg-white rounded-xl shadow-xl border overflow-hidden animate-scaleIn z-10">
-                    <button
-                      onClick={() => openEdit(partner)}
-                      className="w-full text-left px-4 py-2 hover:bg-blue-50 flex items-center gap-2 transition-colors text-black"
-                    >
-                      <PencilIcon className="w-4 h-4" /> Edit
-                    </button>
-                  </div>
-                )}
-              </div>
             </div>
-          );
-        })}
+
+            {/* ACTIONS */}
+            <div className="flex justify-between mt-3">
+              <button
+                onClick={() => openEdit(partner)}
+                className="flex items-center gap-2 px-3 py-1.5
+                           bg-[var(--color-base)] text-white
+                           rounded-md shadow-sm
+                           hover:brightness-110 transition-all text-sm"
+              >
+                <Pencil className="w-4 h-4" />
+                Edit
+              </button>
+
+              <button
+                onClick={() => handleDelete(partner)}
+                className="flex items-center gap-2 px-3 py-1.5
+                           bg-red-600 text-white rounded-md
+                           shadow-sm hover:bg-red-700
+                           transition-all text-sm"
+              >
+                <Trash2 className="w-4 h-4" />
+                Delete
+              </button>
+            </div>
+          </div>
+        ))}
       </div>
 
-      {/* Modals */}
+      {/* MODALS */}
       <CreatePartnerModal
         isOpen={createOpen}
         onClose={() => setCreateOpen(false)}
       />
+
       <EditPartnerModal
         isOpen={editOpen}
-        partner={selectedPartner}
         onClose={() => setEditOpen(false)}
+        partner={selectedPartner}
       />
     </div>
   );

@@ -45,67 +45,78 @@ export default function AddDonationModal({ isOpen, onClose }: Props) {
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 bg-black/40 backdrop-blur-sm flex items-center justify-center z-50 animate-fadeIn">
-      <div className="bg-white w-full max-w-md sm:max-w-lg p-6 rounded-2xl shadow-xl relative animate-scaleIn transition-all duration-300">
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm animate-fadeIn">
+      <div className="bg-white w-full max-w-xs sm:max-w-sm rounded-xl shadow-xl p-4 animate-scaleIn relative">
 
-        {/* Close button */}
         <button
           onClick={onClose}
-          className="absolute top-4 right-4 text-gray-400 hover:text-black hover:rotate-90 transition-all"
+          className="absolute top-3 right-3 text-gray-400 hover:text-black transition"
         >
           ✕
         </button>
 
-        {/* Header */}
-        <h2 className="text-2xl font-bold mb-6 font-figtree">Add Donation</h2>
-
-        {/* Project Select */}
-        <div className="mb-4">
-          <label className="block text-sm font-medium mb-1">Project</label>
-          <select
-            value={projectId}
-            onChange={(e) => setProjectId(Number(e.target.value))}
-            className="w-full border border-gray-300 p-2 rounded-lg focus:ring-2 focus:ring-[var(--color-base)] transition"
-          >
-            <option value="">Select project</option>
-            {projects.map((p) => (
-              <option key={p.id} value={p.id}>
-                {p.title}
-              </option>
-            ))}
-          </select>
-        </div>
-
-        {/* Donor Name */}
-        <div className="mb-4">
-          <label className="block text-sm font-medium mb-1">Donor Name (optional)</label>
-          <input
-            value={donorName}
-            onChange={(e) => setDonorName(e.target.value)}
-            placeholder="Anonymous"
-            className="w-full border border-gray-300 p-2 rounded-lg focus:ring-2 focus:ring-[var(--color-accent)] transition"
-          />
-        </div>
-
-        {/* Amount */}
-        <div className="mb-6">
-          <label className="block text-sm font-medium mb-1">Amount</label>
-          <input
-            type="number"
-            value={amount}
-            onChange={(e) => setAmount(Number(e.target.value))}
-            placeholder="0"
-            className="w-full border border-gray-300 p-2 rounded-lg focus:ring-2 focus:ring-[var(--color-secondary)] transition"
-          />
-        </div>
-
-        {/* Submit Button */}
-        <button
-          onClick={handleSubmit}
-          className="w-full bg-[var(--color-base)] text-white py-2 rounded-lg hover:brightness-110 hover:scale-[1.02] transition-all duration-300 font-semibold"
-        >
+        <h2 className="text-lg font-semibold mb-3">
           Add Donation
-        </button>
+        </h2>
+
+        <div className="space-y-3">
+          {/* Project */}
+          <div>
+            <label className="block text-xs font-medium mb-1">
+              Project
+            </label>
+            <select
+              value={projectId}
+              onChange={(e) => setProjectId(Number(e.target.value))}
+              className="w-full border border-gray-300 p-2 rounded-lg text-sm"
+            >
+              <option value="">Select project</option>
+              {projects.length === 0 ? (
+                <option disabled>Loading projects…</option>
+              ) : (
+                projects.map((p) => (
+                  <option key={p.id} value={p.id}>
+                    {p.title}
+                  </option>
+                ))
+              )}
+            </select>
+          </div>
+
+          {/* Donor */}
+          <div>
+            <label className="block text-xs font-medium mb-1">
+              Donor Name
+            </label>
+            <input
+              value={donorName}
+              onChange={(e) => setDonorName(e.target.value)}
+              placeholder="Anonymous"
+              className="w-full border border-gray-300 p-2 rounded-lg text-sm"
+            />
+          </div>
+
+          {/* Amount */}
+          <div>
+            <label className="block text-xs font-medium mb-1">
+              Amount
+            </label>
+            <input
+              type="number"
+              value={amount}
+              onChange={(e) => setAmount(Number(e.target.value))}
+              placeholder="0"
+              className="w-full border border-gray-300 p-2 rounded-lg text-sm"
+            />
+          </div>
+
+          <button
+            onClick={handleSubmit}
+            className="w-full bg-[var(--color-base)] text-white py-2 rounded-lg text-sm font-semibold hover:brightness-110 transition"
+          >
+            Add Donation
+          </button>
+        </div>
       </div>
     </div>
   );

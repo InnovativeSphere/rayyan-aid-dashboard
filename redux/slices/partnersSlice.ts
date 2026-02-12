@@ -8,7 +8,6 @@ export interface Partner {
   website_url?: string | null;
   created_at?: string;
   updated_at?: string;
-  
 }
 
 interface PartnersState {
@@ -32,28 +31,26 @@ export const fetchPartners = createAsyncThunk<
   { rejectValue: string }
 >("partners/fetchAll", async (_, thunkAPI) => {
   try {
-    const data = await api.getPartners();
-    return data;
+    return await api.getPartners();
   } catch (err: any) {
     return thunkAPI.rejectWithValue(err.response?.data || err.message);
   }
 });
 
-// CREATE a partner
+// CREATE partner
 export const createPartner = createAsyncThunk<
   Partner,
   Omit<Partner, "id" | "created_at" | "updated_at">,
   { rejectValue: string }
 >("partners/create", async (partner, thunkAPI) => {
   try {
-    const data = await api.createPartner(partner);
-    return data;
+    return await api.createPartner(partner);
   } catch (err: any) {
     return thunkAPI.rejectWithValue(err.response?.data || err.message);
   }
 });
 
-// UPDATE a partner
+// UPDATE partner
 export const updatePartner = createAsyncThunk<
   { id: number; partner: Partner },
   { id: number; data: Partial<Partner> },
@@ -67,7 +64,7 @@ export const updatePartner = createAsyncThunk<
   }
 });
 
-// DELETE a partner
+// DELETE partner
 export const deletePartner = createAsyncThunk<
   number,
   number,
@@ -76,6 +73,20 @@ export const deletePartner = createAsyncThunk<
   try {
     await api.deletePartner(id);
     return id;
+  } catch (err: any) {
+    return thunkAPI.rejectWithValue(err.response?.data || err.message);
+  }
+});
+
+// UPLOAD partner logo
+export const uploadPartnerLogo = createAsyncThunk<
+  { partnerId: number; logo_url: string },
+  { partnerId: number; file: File },
+  { rejectValue: string }
+>("partners/uploadLogo", async ({ partnerId, file }, thunkAPI) => {
+  try {
+    const res = await api.uploadImage(file, "partner");
+    return { partnerId, logo_url: res.url };
   } catch (err: any) {
     return thunkAPI.rejectWithValue(err.response?.data || err.message);
   }
@@ -93,13 +104,10 @@ const partnersSlice = createSlice({
         state.status = "loading";
         state.error = null;
       })
-      .addCase(
-        fetchPartners.fulfilled,
-        (state, action: PayloadAction<Partner[]>) => {
-          state.status = "succeeded";
-          state.partners = action.payload;
-        },
-      )
+      .addCase(fetchPartners.fulfilled, (state, action) => {
+        state.status = "succeeded";
+        state.partners = action.payload;
+      })
       .addCase(fetchPartners.rejected, (state, action) => {
         state.status = "failed";
         state.error = action.payload || "Failed to fetch partners";
@@ -110,13 +118,10 @@ const partnersSlice = createSlice({
         state.status = "loading";
         state.error = null;
       })
-      .addCase(
-        createPartner.fulfilled,
-        (state, action: PayloadAction<Partner>) => {
-          state.status = "succeeded";
-          state.partners.push(action.payload);
-        },
-      )
+      .addCase(createPartner.fulfilled, (state, action) => {
+        state.status = "succeeded";
+        state.partners.push(action.payload);
+      })
       .addCase(createPartner.rejected, (state, action) => {
         state.status = "failed";
         state.error = action.payload || "Failed to create partner";
@@ -132,7 +137,12 @@ const partnersSlice = createSlice({
         const index = state.partners.findIndex(
           (p) => p.id === action.payload.id,
         );
-        if (index !== -1) state.partners[index] = action.payload.partner;
+        if (index !== -1) {
+          state.partners[index] = {
+            ...state.partners[index],
+            ...action.payload.partner,
+          };
+        }
       })
       .addCase(updatePartner.rejected, (state, action) => {
         state.status = "failed";
@@ -144,18 +154,30 @@ const partnersSlice = createSlice({
         state.status = "loading";
         state.error = null;
       })
-      .addCase(
-        deletePartner.fulfilled,
-        (state, action: PayloadAction<number>) => {
-          state.status = "succeeded";
-          state.partners = state.partners.filter(
-            (p) => p.id !== action.payload,
-          );
-        },
-      )
+      .addCase(deletePartner.fulfilled, (state, action) => {
+        state.status = "succeeded";
+        state.partners = state.partners.filter((p) => p.id !== action.payload);
+      })
       .addCase(deletePartner.rejected, (state, action) => {
         state.status = "failed";
         state.error = action.payload || "Failed to delete partner";
+      })
+
+      // upload logo
+      .addCase(uploadPartnerLogo.pending, (state) => {
+        state.status = "loading";
+        state.error = null;
+      })
+      .addCase(uploadPartnerLogo.fulfilled, (state, action) => {
+        state.status = "succeeded";
+        const partner = state.partners.find(
+          (p) => p.id === action.payload.partnerId,
+        );
+        if (partner) partner.logo_url = action.payload.logo_url;
+      })
+      .addCase(uploadPartnerLogo.rejected, (state, action) => {
+        state.status = "failed";
+        state.error = action.payload || "Failed to upload partner logo";
       });
   },
 });

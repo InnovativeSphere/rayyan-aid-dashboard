@@ -5,11 +5,14 @@ import * as api from "../../pages/lib/api";
 
 export type ImageDescription = string;
 
+export type ProjectImageType = "project_before" | "project_after";
+
 export interface ProjectImage {
   id: number;
   project_id: number;
   image_url: string;
   description: ImageDescription;
+  type: ProjectImageType;
   created_at: string;
   project_title?: string;
 }
@@ -19,6 +22,7 @@ export interface AddImagesPayload {
   images: {
     image_url: string;
     description: ImageDescription;
+    type: ProjectImageType;
   }[];
 }
 
@@ -42,26 +46,23 @@ const normalizeError = (err: any) => {
 };
 
 // ------------------- THUNKS -------------------
+
 // Allow optional project_id
 export const fetchProjectImages = createAsyncThunk<
   ProjectImage[],
   number | undefined,
   { rejectValue: string }
->(
-  "projectImages/fetch",
-  async (project_id, thunkAPI) => {
-    try {
-      // If project_id is undefined, fetch all images
-      const images = project_id
-        ? await api.getProjectImages(project_id)
-        : await api.getAllProjectImages(); // <-- make sure your API has this method
-      return images;
-    } catch (err) {
-      return thunkAPI.rejectWithValue(normalizeError(err));
-    }
-  }
-);
+>("projectImages/fetch", async (project_id, thunkAPI) => {
+  try {
+    const images = project_id
+      ? await api.getProjectImages(project_id)
+      : await api.getAllProjectImages();
 
+    return images;
+  } catch (err) {
+    return thunkAPI.rejectWithValue(normalizeError(err));
+  }
+});
 
 // Add images
 export const addProjectImages = createAsyncThunk<
@@ -71,12 +72,15 @@ export const addProjectImages = createAsyncThunk<
 >("projectImages/add", async (payload, thunkAPI) => {
   try {
     await api.addProjectImages(payload.project_id, payload.images);
+
     const now = new Date().toISOString();
+
     return payload.images.map((img) => ({
-      id: Math.floor(Math.random() * 1000000),
+      id: Math.floor(Math.random() * 1_000_000),
       project_id: payload.project_id,
       image_url: img.image_url,
       description: img.description,
+      type: img.type,
       created_at: now,
     }));
   } catch (err) {
@@ -84,20 +88,14 @@ export const addProjectImages = createAsyncThunk<
   }
 });
 
-// Remove image (fixed to handle token/cookie correctly)
+// Remove image
 export const removeProjectImage = createAsyncThunk<
   { id: number },
   number,
   { rejectValue: string }
 >("projectImages/remove", async (id, thunkAPI) => {
   try {
-    // Choose which version based on your auth strategy
-    // 1) If using cookies:
     await api.removeProjectImage(id);
-
-    // 2) If using localStorage token:
-    // await api.removeProjectImageWithToken(id);
-
     return { id };
   } catch (err) {
     return thunkAPI.rejectWithValue(normalizeError(err));
@@ -128,7 +126,7 @@ const projectImagesSlice = createSlice({
         (state, action: PayloadAction<ProjectImage[]>) => {
           state.loading = false;
           state.images = action.payload;
-        },
+        }
       )
       .addCase(fetchProjectImages.rejected, (state, action) => {
         state.loading = false;
@@ -145,7 +143,7 @@ const projectImagesSlice = createSlice({
         (state, action: PayloadAction<ProjectImage[]>) => {
           state.loading = false;
           state.images.push(...action.payload);
-        },
+        }
       )
       .addCase(addProjectImages.rejected, (state, action) => {
         state.loading = false;
@@ -162,9 +160,9 @@ const projectImagesSlice = createSlice({
         (state, action: PayloadAction<{ id: number }>) => {
           state.loading = false;
           state.images = state.images.filter(
-            (img) => img.id !== action.payload.id,
+            (img) => img.id !== action.payload.id
           );
-        },
+        }
       )
       .addCase(removeProjectImage.rejected, (state, action) => {
         state.loading = false;

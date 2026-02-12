@@ -42,9 +42,7 @@ export default function Dashboard() {
   const dispatch = useDispatch<AppDispatch>();
   const [selectedProject, setSelectedProject] = useState<number | "all">("all");
 
-  const { donations } = useSelector(
-    (state: RootState) => state.donations,
-  );
+  const { donations } = useSelector((state: RootState) => state.donations);
   const { projects } = useSelector((state: RootState) => state.projects);
   const { partners } = useSelector((state: RootState) => state.partners);
 
@@ -83,8 +81,7 @@ export default function Dashboard() {
     }).format(totalDonationsAmount);
   }, [totalDonationsAmount]);
 
-  const isLoading =
-    !projects.length && !donations.length;
+  const isLoading = !projects.length && !donations.length;
 
   /* -------------------- UI -------------------- */
 
@@ -97,7 +94,7 @@ export default function Dashboard() {
   }
 
   return (
-    <div className="flex flex-col gap-10 mt-6">
+    <div className="flex flex-col gap-12 mt-6 animate-fadeIn">
 
       {/* HEADER */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
@@ -117,7 +114,9 @@ export default function Dashboard() {
               e.target.value === "all" ? "all" : Number(e.target.value),
             )
           }
-          className="rounded-lg px-4 py-2 text-sm border border-gray-300 bg-white"
+          className="rounded-lg px-4 py-2 text-sm border border-gray-300 bg-white
+                     transition focus:outline-none focus:ring-2
+                     focus:ring-[var(--color-accent)]"
         >
           <option value="all">All Projects</option>
           {projects.map((p) => (
@@ -128,23 +127,23 @@ export default function Dashboard() {
         </select>
       </div>
 
-      {/* ANALYTICS FIRST */}
+      {/* ANALYTICS */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
 
-        <Card className="lg:col-span-2">
+        <Card className="lg:col-span-2 hover:shadow-lg transition-shadow">
           <div className="flex items-center justify-between mb-4">
             <h2 className="font-semibold">Donation Analytics</h2>
-            <Badge text={"Live"}></Badge>
+            <Badge text="Live" />
           </div>
 
           <div className="h-[320px]">
             <ResponsiveContainer width="100%" height="100%">
               <BarChart data={donations}>
-                <XAxis dataKey="id" />
-                <YAxis />
+                <XAxis dataKey="id" tickLine={false} />
+                <YAxis tickLine={false} />
                 <Tooltip />
-                <Bar dataKey="amount" radius={[8, 8, 0, 0]}>
-                  {donations?.map((_, index) => (
+                <Bar dataKey="amount" radius={[10, 10, 0, 0]}>
+                  {donations.map((_, index) => (
                     <Cell
                       key={index}
                       fill={
@@ -163,77 +162,50 @@ export default function Dashboard() {
         </Card>
 
         {/* SUMMARY */}
-        <Card>
+        <Card className="hover:shadow-lg transition-shadow">
           <h2 className="font-semibold mb-4">Summary</h2>
 
           <div className="flex flex-col gap-4 text-sm">
-            <div className="flex justify-between">
-              <span>Total Donations</span>
-              <span className="font-medium">{formattedTotal}</span>
-            </div>
-
-            <div className="flex justify-between">
-              <span>Total Donors</span>
-              <span className="font-medium">{filteredDonations.length}</span>
-            </div>
-
-            <div className="flex justify-between">
-              <span>Total Projects</span>
-              <span className="font-medium">{projects.length}</span>
-            </div>
-
-            <div className="flex justify-between">
-              <span>Partners</span>
-              <span className="font-medium">{partners.length}</span>
-            </div>
+            {[
+              ["Total Donations", formattedTotal],
+              ["Total Donors", filteredDonations.length],
+              ["Total Projects", projects.length],
+              ["Partners", partners.length],
+            ].map(([label, value]) => (
+              <div key={label} className="flex justify-between">
+                <span className="text-gray-600">{label}</span>
+                <span className="font-medium">{value}</span>
+              </div>
+            ))}
           </div>
         </Card>
-
       </div>
 
       {/* STATS */}
       <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-5 gap-6">
-
-        <StatsCard
-          title="Projects"
-          value={projects.length}
-          className="bg-[var(--color-secondary)] text-white"
+        <StatsCard title="Projects" value={projects.length}
+          className="bg-[var(--color-secondary)] text-white hover:scale-[1.02] transition"
           icon={<Folder className="w-5 h-5" />}
         />
-
-        <StatsCard
-          title="Donations"
-          value={formattedTotal}
-          className="bg-[var(--color-base)] text-white"
+        <StatsCard title="Donations" value={formattedTotal}
+          className="bg-[var(--color-base)] text-white hover:scale-[1.02] transition"
           icon={<DollarSign className="w-5 h-5" />}
         />
-
-        <StatsCard
-          title="Donors"
-          value={filteredDonations.length}
-          className="bg-[var(--color-accent)] text-white"
+        <StatsCard title="Donors" value={filteredDonations.length}
+          className="bg-[var(--color-accent)] text-white hover:scale-[1.02] transition"
           icon={<Users className="w-5 h-5" />}
         />
-
-        <StatsCard
-          title="Partners"
-          value={partners.length}
-          className="bg-[var(--color-secondary)] text-white"
+        <StatsCard title="Partners" value={partners.length}
+          className="bg-[var(--color-secondary)] text-white hover:scale-[1.02] transition"
           icon={<Handshake className="w-5 h-5" />}
         />
-
-        <StatsCard
-          title="Active"
-          value={projects.length}
-          className="bg-[var(--color-base)] text-white"
+        <StatsCard title="Active" value={projects.length}
+          className="bg-[var(--color-base)] text-white hover:scale-[1.02] transition"
           icon={<Activity className="w-5 h-5" />}
         />
-
       </div>
 
- 
-
-      {/* QUICK ACTIONS AT BOTTOM */}
+      {/* QUICK ACTIONS */}
       <div>
         <h2 className="font-semibold mb-4">Quick Actions</h2>
 
@@ -264,7 +236,7 @@ export default function Dashboard() {
             <Link key={item.name} href={item.href}>
               <Card
                 className={`flex items-center gap-4 p-6 ${item.color}
-                hover:shadow-xl hover:-translate-y-1 transition-all`}
+                hover:shadow-xl hover:-translate-y-1 transition-all duration-300`}
               >
                 <div
                   className={`w-12 h-12 rounded-full bg-white flex items-center justify-center ${item.iconColor}`}
@@ -281,8 +253,9 @@ export default function Dashboard() {
           ))}
         </div>
       </div>
-     {/* RECENT DONATIONS */}
-      <Card>
+
+      {/* RECENT DONATIONS */}
+      <Card className="hover:shadow-lg transition-shadow">
         <div className="flex items-center justify-between mb-4">
           <h2 className="font-semibold">Recent Donations</h2>
           <Link

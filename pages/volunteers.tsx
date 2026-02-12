@@ -64,16 +64,14 @@ export default function VolunteersPage() {
           title="Total Volunteers"
           value={volunteers.length}
           icon={<Users className="w-6 h-6 text-white" />}
-          className="bg-gradient-to-br from-[var(--color-secondary)] to-[var(--color-accent)]
-          text-white h-[110px]"
+          className="bg-[var(--color-secondary)] text-white h-[110px]"
         />
 
         <StatsCard
           title="Active"
           value={volunteers.filter((v) => v.is_active).length}
           icon={<Users className="w-6 h-6 text-white" />}
-          className="bg-gradient-to-br from-black to-gray-800
-          text-white h-[110px]"
+          className="bg-[var(--color-base)] text-white h-[110px]"
         />
 
       </div>
@@ -102,7 +100,7 @@ export default function VolunteersPage() {
             <div
               key={vol.id}
               className="bg-white rounded-xl border
-              shadow-sm hover:shadow-lg transition-all
+              shadow-sm hover:shadow-lg hover:-translate-y-1 transition-all
               p-5 flex flex-col md:flex-row md:items-center md:justify-between gap-4"
             >
 
@@ -112,14 +110,14 @@ export default function VolunteersPage() {
                 {vol.photo_url && !brokenImages[vol.id] ? (
                   <img
                     src={vol.photo_url}
-                    className="w-14 h-14 rounded-full object-cover border"
+                    className="w-12 h-12 sm:w-14 sm:h-14 rounded-full object-cover border"
                     onError={() =>
                       setBrokenImages((prev) => ({ ...prev, [vol.id]: true }))
                     }
                   />
                 ) : (
                   <div
-                    className="w-14 h-14 rounded-full
+                    className="w-12 h-12 sm:w-14 sm:h-14 rounded-full
                     bg-[var(--color-secondary)] text-white
                     flex items-center justify-center font-bold"
                   >
@@ -127,13 +125,13 @@ export default function VolunteersPage() {
                   </div>
                 )}
 
-                <div className="flex flex-col space-y-1">
+                <div className="flex flex-col space-y-1 max-w-xs sm:max-w-sm">
 
-                  <h2 className="text-lg font-semibold text-gray-800">
+                  <h2 className="text-lg font-semibold text-gray-800 truncate">
                     {vol.first_name} {vol.last_name}
                   </h2>
 
-                  <p className="text-gray-500 text-sm line-clamp-2 max-w-xl">
+                  <p className="text-gray-500 text-sm line-clamp-2 max-w-full">
                     {vol.bio || "No bio provided."}
                   </p>
 

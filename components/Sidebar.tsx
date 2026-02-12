@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import Image from "next/image";
 import { usePathname } from "next/navigation";
 import { useDispatch } from "react-redux";
 import { AppDispatch } from "../redux/store";
@@ -33,7 +34,11 @@ const navItems = [
   { name: "Supervisors", href: "/supervisors", icon: UserGroupIcon },
   { name: "Volunteers", href: "/volunteers", icon: UserGroupIcon },
   { name: "Profile", href: "/profile", icon: UserIcon },
-  { name: "Register", href: "/signup", icon: FaAmericanSignLanguageInterpreting },
+  {
+    name: "Register",
+    href: "/signup",
+    icon: FaAmericanSignLanguageInterpreting,
+  },
   { name: "Category", href: "/categories", icon: WindowIcon },
   { name: "Partners", href: "/partners", icon: Users },
 ];
@@ -54,9 +59,18 @@ export default function Sidebar({ collapsed, setCollapsed }: SidebarProps) {
       {/* Header */}
       <div className="h-16 flex items-center justify-between px-4 border-b border-[var(--color-gray)]">
         {!collapsed && (
-          <span className="font-bold text-[var(--color-base)] text-lg tracking-wide">
-            Dashboard
-          </span>
+          <div className="flex items-center gap-2">
+            <Image
+              src="/Rayyan Aid Logo-03.png"
+              alt="Rayyan Aid Logo"
+              width={40}
+              height={40}
+              className="object-contain"
+            />
+            <span className="font-bold text-[var(--color-base)] text-lg tracking-wide">
+              Rayyan Aid
+            </span>
+          </div>
         )}
 
         <button
@@ -79,18 +93,19 @@ export default function Sidebar({ collapsed, setCollapsed }: SidebarProps) {
             href={item.href}
             className={`
               flex items-center gap-3 p-2 rounded-lg text-sm font-medium
+              text-white
               transition-all duration-300
-              ${pathname === item.href
-                ? "bg-[var(--color-accent)] text-white shadow-md"
-                : "hover:bg-[var(--color-gray-light)] hover:text-white"}
+              ${
+                pathname === item.href
+                  ? "bg-[var(--color-accent)] shadow-md"
+                  : "bg-transparent hover:bg-[var(--color-base)]/30"
+              }
             `}
           >
-            <item.icon
-              className={`w-5 h-5 transition-colors duration-300
-                ${pathname === item.href ? "text-white" : "text-[var(--color-base)]"}
-              `}
-            />
-            {!collapsed && <span className="truncate">{item.name}</span>}
+            <item.icon className="w-5 h-5 text-white transition-colors duration-300" />
+            {!collapsed && (
+              <span className="truncate text-white">{item.name}</span>
+            )}
           </Link>
         ))}
       </nav>

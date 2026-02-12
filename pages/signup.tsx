@@ -75,12 +75,12 @@ export default function SignupPage() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center py-10 bg-[var(--color-light)]">
-      <div className="w-full max-w-md bg-white/90 backdrop-blur-md rounded-2xl shadow-xl p-8 animate-fadeIn">
-        <h1 className="text-3xl font-extrabold text-[var(--color-base)] mb-4 text-center">
+    <div className="min-h-screen flex items-center justify-center py-10 bg-[var(--color-light)] px-4">
+      <div className="w-full max-w-md bg-white rounded-2xl shadow-lg p-8 animate-fadeIn transition-all hover:shadow-xl">
+        <h1 className="text-3xl font-extrabold text-[var(--color-base)] mb-2 text-center truncate">
           Register New Admin
         </h1>
-        <p className="text-gray-500 text-sm text-center mb-6">
+        <p className="text-gray-500 text-sm text-center mb-6 truncate">
           Fill in the details to create a new admin account
         </p>
 
@@ -89,6 +89,8 @@ export default function SignupPage() {
         {success && <p className="text-green-600 mb-3 text-center">{success}</p>}
 
         <form onSubmit={handleSubmit} className="space-y-4">
+
+          {/* Input Fields */}
           {[
             { label: "First Name", name: "first_name", type: "text" },
             { label: "Last Name", name: "last_name", type: "text" },
@@ -97,21 +99,24 @@ export default function SignupPage() {
             { label: "Password", name: "password", type: "password" },
             { label: "Confirm Password", name: "confirmPassword", type: "password" },
           ].map((field) => (
-            <div key={field.name} className="flex items-center gap-3 bg-white border border-gray-300 rounded-lg px-4 py-2 focus-within:ring-2 focus-within:ring-[var(--color-base)] transition-all">
+            <div
+              key={field.name}
+              className="flex items-center gap-3 bg-white border border-gray-300 rounded-lg px-4 py-2 focus-within:ring-2 focus-within:ring-[var(--color-base)] transition-all"
+            >
               {iconMap[field.name]}
               <input
                 type={field.type}
                 name={field.name}
                 value={(form as any)[field.name]}
                 onChange={handleChange}
-                required={field.type !== "text" || field.name !== "username"}
+                required
                 placeholder={field.label}
-                className="bg-transparent w-full text-gray-700 placeholder-gray-400 focus:outline-none"
+                className="bg-transparent w-full text-gray-700 placeholder-gray-400 focus:outline-none truncate"
               />
             </div>
           ))}
 
-          {/* Role */}
+          {/* Role Select */}
           <div className="flex items-center gap-3 bg-white border border-gray-300 rounded-lg px-4 py-2 focus-within:ring-2 focus-within:ring-[var(--color-base)] transition-all">
             <User className="w-5 h-5 text-gray-400 flex-shrink-0" />
             <select
@@ -124,6 +129,7 @@ export default function SignupPage() {
             </select>
           </div>
 
+          {/* Submit Button */}
           <button
             type="submit"
             disabled={loading}

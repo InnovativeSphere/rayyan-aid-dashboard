@@ -1,18 +1,27 @@
 "use client";
 
 import Link from "next/link";
-import React from "react";
+import Image from "next/image";
 
 const Footer = () => {
   return (
-    <footer className="bg-(--color-blak) mt-24 text-white px-6 py-10">
+    <footer className=" mt-24 text-white px-6 py-10">
       <div className="max-w-330 mx-auto grid md:grid-cols-3 gap-8">
         {/* Brand / About */}
-        <div>
-          <h4 className="font-heading text-xl text-(--color-base) mb-4">
-            Rayyan Aid
-          </h4>
-          <p className="font-body text-(--color-gray) leading-7">
+        <div className="flex flex-col items-start">
+          <div className="flex items-center gap-2 mb-3">
+            <Image
+              src="/Rayyan Aid Logo-03.png"
+              alt="Rayyan Aid Logo"
+              width={50}
+              height={50}
+              className="object-contain"
+            />
+            <h4 className="font-heading text-xl text-[var(--color-base)]">
+              Rayyan Aid
+            </h4>
+          </div>
+          <p className="font-body text-[var(--color-gray)] leading-7">
             Making an impact, one donation at a time. Your support drives
             meaningful change and helps communities thrive.
           </p>
@@ -66,13 +75,19 @@ const Footer = () => {
                 07063653772
               </Link>
             </li>
-            <li>Address: 123 Charity Lane, Lagos, Nigeria</li>
+            <li>Address: Abuja, Nigeria</li>
           </ul>
           <div className="flex mt-4 space-x-4">
             {[
               { href: "https://twitter.com/rayyanaid", icon: "fab fa-twitter" },
-              { href: "https://facebook.com/rayyanaid", icon: "fab fa-facebook" },
-              { href: "https://instagram.com/rayyanaid", icon: "fab fa-instagram" },
+              {
+                href: "https://facebook.com/rayyanaid",
+                icon: "fab fa-facebook",
+              },
+              {
+                href: "https://instagram.com/rayyanaid",
+                icon: "fab fa-instagram",
+              },
             ].map((social) => (
               <Link
                 key={social.href}

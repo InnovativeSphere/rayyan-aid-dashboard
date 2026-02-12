@@ -16,15 +16,15 @@ export default function ProfilePage() {
 
   return (
     <div className="min-h-screen flex items-center justify-center py-10 bg-[var(--color-light)]">
-      <div className="w-full max-w-2xl bg-white/90 backdrop-blur-md rounded-2xl shadow-xl p-8 animate-fadeIn transition-all hover:shadow-2xl">
+      <div className="w-full max-w-2xl bg-white rounded-2xl shadow-xl p-8 animate-fadeIn transition-all hover:shadow-2xl">
         
-        {/* Header */}
+        {/* HEADER */}
         <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6 gap-4">
           <div className="space-y-1">
-            <h1 className="text-3xl font-extrabold text-[var(--color-base)]">
+            <h1 className="text-3xl font-extrabold text-[var(--color-base)] truncate">
               {user.first_name} {user.last_name}
             </h1>
-            <p className="text-gray-500">@{user.username || "no-username"}</p>
+            <p className="text-gray-500 truncate">@{user.username || "no-username"}</p>
           </div>
 
           <button
@@ -36,31 +36,31 @@ export default function ProfilePage() {
           </button>
         </div>
 
-        {/* Info Grid */}
+        {/* INFO GRID */}
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 text-sm">
-          <div className="flex items-center gap-2">
-            <Mail className="w-4 h-4 text-gray-400" />
-            <div>
+          <div className="flex items-center gap-3">
+            <Mail className="w-5 h-5 text-gray-400 shrink-0" />
+            <div className="truncate">
               <p className="text-gray-400">Email</p>
-              <p className="text-gray-700">{user.email}</p>
+              <p className="text-gray-700 truncate">{user.email}</p>
             </div>
           </div>
 
-          <div className="flex items-center gap-2">
-            <Tag className="w-4 h-4 text-gray-400" />
-            <div>
+          <div className="flex items-center gap-3">
+            <Tag className="w-5 h-5 text-gray-400 shrink-0" />
+            <div className="truncate">
               <p className="text-gray-400">Role</p>
-              <p className="capitalize text-gray-700">{user.role}</p>
+              <p className="capitalize text-gray-700 truncate">{user.role}</p>
             </div>
           </div>
 
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-3">
             {user.is_active ? (
-              <CheckCircle className="w-4 h-4 text-green-600" />
+              <CheckCircle className="w-5 h-5 text-green-600 shrink-0" />
             ) : (
-              <XCircle className="w-4 h-4 text-red-600" />
+              <XCircle className="w-5 h-5 text-red-600 shrink-0" />
             )}
-            <div>
+            <div className="truncate">
               <p className="text-gray-400">Status</p>
               <p className={`${user.is_active ? "text-green-600" : "text-red-600"} font-semibold`}>
                 {user.is_active ? "Active" : "Inactive"}
@@ -68,9 +68,9 @@ export default function ProfilePage() {
             </div>
           </div>
 
-          <div className="flex items-center gap-2">
-            <Calendar className="w-4 h-4 text-gray-400" />
-            <div>
+          <div className="flex items-center gap-3">
+            <Calendar className="w-5 h-5 text-gray-400 shrink-0" />
+            <div className="truncate">
               <p className="text-gray-400">Member Since</p>
               <p className="text-gray-700">
                 {user.created_at ? new Date(user.created_at).toLocaleDateString() : "-"}

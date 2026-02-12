@@ -4,7 +4,8 @@ import { useEffect, useState } from "react";
 import { useAppDispatch } from "../redux/hook";
 import { editCategory } from "../redux/slices/categoriesSlice";
 import type { Category } from "../redux/slices/categoriesSlice";
-import { FiX } from "react-icons/fi";
+import { X, Tag, FileText } from "lucide-react";
+import '../app/globals.css';
 
 interface Props {
   open: boolean;
@@ -12,11 +13,7 @@ interface Props {
   category: Category | null;
 }
 
-export default function EditCategoryModal({
-  open,
-  onClose,
-  category,
-}: Props) {
+export default function EditCategoryModal({ open, onClose, category }: Props) {
   const dispatch = useAppDispatch();
 
   const [name, setName] = useState("");
@@ -34,75 +31,59 @@ export default function EditCategoryModal({
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-
     if (!name.trim() || !description.trim()) return;
 
     setLoading(true);
-
-    await dispatch(
-      editCategory({
-        id: category.id,
-        data: {
-          name,
-          description,
-        },
-      })
-    );
-
+    await dispatch(editCategory({ id: category.id, data: { name, description } }));
     setLoading(false);
     onClose();
   };
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm p-4">
-      <div className="w-full max-w-md bg-white rounded-xl shadow-xl p-6 relative animate-fadeIn">
+      <div className="bg-white rounded-xl shadow-xl w-full max-w-xs sm:max-w-sm md:max-w-md p-5 flex flex-col animate-fadeIn">
 
-        {/* Close Button */}
-        <button
-          onClick={onClose}
-          className="absolute top-4 right-4 text-gray-500 hover:text-red-500 transition"
-        >
-          <FiX size={20} />
-        </button>
-
-        {/* Title */}
-        <h2 className="text-xl font-bold mb-4 text-gray-800">
-          Edit Category
-        </h2>
+        {/* Header */}
+        <div className="flex justify-between items-center mb-4">
+          <h2 className="text-lg sm:text-xl font-bold text-[var(--color-base)]">
+            Edit Category
+          </h2>
+          <button onClick={onClose} className="text-gray-500 hover:text-gray-700">
+            <X size={18} />
+          </button>
+        </div>
 
         {/* Form */}
-        <form onSubmit={handleSubmit} className="space-y-4">
+        <form onSubmit={handleSubmit} className="flex flex-col gap-3">
 
-          <div>
-            <label className="block text-sm font-medium mb-1">
-              Category Name
-            </label>
+          <div className="flex items-center gap-2 border rounded-lg p-2">
+            <Tag size={16} className="text-gray-400" />
             <input
               type="text"
               value={name}
               onChange={(e) => setName(e.target.value)}
-              className="w-full px-4 py-2 rounded-lg border focus:outline-none focus:ring-2 focus:ring-[var(--color-accent)]"
+              placeholder="Category Name"
+              className="flex-1 outline-none text-sm sm:text-base"
             />
           </div>
 
-          <div>
-            <label className="block text-sm font-medium mb-1">
-              Description
-            </label>
+          <div className="flex items-start gap-2 border rounded-lg p-2">
+            <FileText size={16} className="text-gray-400 mt-1" />
             <textarea
               value={description}
               onChange={(e) => setDescription(e.target.value)}
-              rows={4}
-              className="w-full px-4 py-2 rounded-lg border focus:outline-none focus:ring-2 focus:ring-[var(--color-accent)] resize-none"
+              placeholder="Short description..."
+              rows={3}
+              className="flex-1 outline-none text-sm sm:text-base resize-none"
             />
           </div>
 
           {/* Actions */}
-          <div className="flex justify-end gap-3 pt-2">
+          <div className="flex justify-end gap-2 pt-2">
             <button
               type="button"
               onClick={onClose}
-              className="px-4 py-2 rounded-lg border hover:bg-gray-100 transition"
+              className="px-3 py-2 rounded-lg border hover:bg-gray-100 transition text-sm sm:text-base"
             >
               Cancel
             </button>
@@ -110,7 +91,7 @@ export default function EditCategoryModal({
             <button
               type="submit"
               disabled={loading}
-              className="px-5 py-2 rounded-lg bg-[var(--color-accent)] text-white hover:opacity-90 transition disabled:opacity-60"
+              className={`px-4 py-2 rounded-lg bg-[var(--color-accent)] text-white hover:bg-[var(--color-base)] transition font-medium text-sm sm:text-base ${loading ? "opacity-50 cursor-not-allowed" : ""}`}
             >
               {loading ? "Saving..." : "Save Changes"}
             </button>

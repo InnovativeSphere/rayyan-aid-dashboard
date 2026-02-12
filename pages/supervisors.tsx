@@ -10,7 +10,7 @@ import EditSupervisorModal from "../components/EditSupervisorModal";
 import StatsCard from "../components/StatusCard";
 import Loader from "../components/Loader";
 
-import { Users, Pencil } from "lucide-react";
+import { Users, Pencil, CheckCircle, XCircle, Plus } from "lucide-react";
 import "../app/globals.css";
 
 export default function SupervisorsPage() {
@@ -51,31 +51,27 @@ export default function SupervisorsPage() {
         <button
           onClick={() => setCreateModalOpen(true)}
           className="bg-[var(--color-accent)] text-white px-5 py-2.5 rounded-lg
-          shadow-md hover:shadow-lg hover:scale-[1.03] transition-all"
+          shadow-md hover:shadow-lg hover:scale-[1.03] transition-all flex items-center gap-1"
         >
-          + Add Supervisor
+          <Plus size={12} className="" />
+           Add Supervisor
         </button>
       </div>
 
       {/* STATS */}
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-5 max-w-xl">
-
         <StatsCard
           title="Total Supervisors"
           value={supervisors.length}
           icon={<Users className="w-6 h-6 text-white" />}
-          className="bg-gradient-to-br from-[var(--color-accent)] to-[var(--color-base)]
-          text-white h-[110px]"
+          className="bg-[var(--color-base)] text-white h-[110px]"
         />
-
         <StatsCard
           title="Active"
           value={supervisors.filter((s) => s.is_active).length}
-          icon={<Users className="w-6 h-6 text-white" />}
-          className="bg-gradient-to-br from-black to-gray-800
-          text-white h-[110px]"
+          icon={<CheckCircle className="w-6 h-6 text-white" />}
+          className="bg-green-600 text-white h-[110px]"
         />
-
       </div>
 
       {/* LOADER */}
@@ -101,25 +97,23 @@ export default function SupervisorsPage() {
           {supervisors.map((sup) => (
             <div
               key={sup.id}
-              className="bg-white rounded-xl border
-              shadow-sm hover:shadow-lg transition-all
+              className="bg-white rounded-xl border shadow-sm hover:shadow-lg transition-all
               p-5 flex flex-col md:flex-row md:items-center md:justify-between gap-4"
             >
 
               {/* LEFT */}
               <div className="flex items-start gap-4">
-
                 {sup.photo_url && !brokenImages[sup.id] ? (
                   <img
                     src={sup.photo_url}
-                    className="w-14 h-14 rounded-full object-cover border"
+                    className="w-12 h-12 sm:w-14 sm:h-14 rounded-full object-cover border"
                     onError={() =>
                       setBrokenImages((prev) => ({ ...prev, [sup.id]: true }))
                     }
                   />
                 ) : (
                   <div
-                    className="w-14 h-14 rounded-full
+                    className="w-12 h-12 sm:w-14 sm:h-14 rounded-full
                     bg-[var(--color-base)] text-white
                     flex items-center justify-center font-bold"
                   >
@@ -128,33 +122,31 @@ export default function SupervisorsPage() {
                 )}
 
                 <div className="flex flex-col space-y-1">
-
                   <h2 className="text-lg font-semibold text-gray-800">
                     {sup.first_name} {sup.last_name}
                   </h2>
 
-                  <p className="text-gray-500 text-sm line-clamp-2 max-w-xl">
+                  <p className="text-gray-500 text-sm line-clamp-2 max-w-xs">
                     {sup.bio || "No bio provided."}
                   </p>
 
                   {sup.is_active !== undefined && (
-                    <span
-                      className={`text-xs font-medium ${
-                        sup.is_active
-                          ? "text-green-600"
-                          : "text-red-600"
-                      }`}
-                    >
-                      {sup.is_active ? "Active" : "Inactive"}
-                    </span>
+                    <div className="flex items-center gap-1 text-xs font-medium mt-1">
+                      {sup.is_active ? (
+                        <CheckCircle className="w-4 h-4 text-green-600" />
+                      ) : (
+                        <XCircle className="w-4 h-4 text-red-600" />
+                      )}
+                      <span className={sup.is_active ? "text-green-600" : "text-red-600"}>
+                        {sup.is_active ? "Active" : "Inactive"}
+                      </span>
+                    </div>
                   )}
-
                 </div>
               </div>
 
               {/* RIGHT */}
               <div className="flex justify-end">
-
                 <button
                   onClick={() => openEditModal(sup)}
                   className="flex items-center gap-1
@@ -167,7 +159,6 @@ export default function SupervisorsPage() {
                   <Pencil className="w-4 h-4" />
                   Edit
                 </button>
-
               </div>
 
             </div>

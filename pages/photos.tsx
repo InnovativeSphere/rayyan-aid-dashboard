@@ -10,12 +10,12 @@ import {
 import AddProjectImageModal from "../components/AddProjectImageModal";
 import EditProjectImageModal from "../components/EditProjectImageModal";
 import Loader from "../components/Loader";
-import { PlusIcon } from "@heroicons/react/24/outline";
+import { PlusIcon, PhotoIcon } from "@heroicons/react/24/outline";
 
 export default function PhotosPage() {
   const dispatch = useDispatch<AppDispatch>();
   const { images, loading, error } = useSelector(
-    (state: RootState) => state.projectImages
+    (state: RootState) => state.projectImages,
   );
 
   const [addModalOpen, setAddModalOpen] = useState(false);
@@ -27,7 +27,7 @@ export default function PhotosPage() {
 
   useEffect(() => {
     dispatch(fetchProjectImages());
-  }, [dispatch, refreshCounter]);
+  }, [dispatch, refreshCounter, addModalOpen, editModalOpen]);
 
   const openEditModal = (img: ProjectImage) => {
     setSelectedImage(img);
@@ -36,26 +36,26 @@ export default function PhotosPage() {
 
   const handleRefresh = () => setRefreshCounter((prev) => prev + 1);
 
-  // Group images by project
   const groupedImages: Record<string, ProjectImage[]> = {};
   images
-    .filter((img) => projectFilter === "All" || img.project_title === projectFilter)
+    .filter(
+      (img) => projectFilter === "All" || img.project_title === projectFilter,
+    )
     .forEach((img) => {
       const projectName = img.project_title || `Project ${img.project_id}`;
       if (!groupedImages[projectName]) groupedImages[projectName] = [];
       groupedImages[projectName].push(img);
     });
 
-  // Auto-slide effect
   useEffect(() => {
     const maxImages = Math.max(
       ...Object.values(groupedImages).map((imgs) =>
         Math.max(
           imgs.filter((i) => i.description === "before").length,
-          imgs.filter((i) => i.description === "after").length
-        )
+          imgs.filter((i) => i.description === "after").length,
+        ),
       ),
-      0
+      0,
     );
     if (maxImages === 0) return;
     const interval = setInterval(() => {
@@ -64,31 +64,43 @@ export default function PhotosPage() {
     return () => clearInterval(interval);
   }, [groupedImages]);
 
-  const projectOptions = ["All", ...Array.from(new Set(images.map((i) => i.project_title)))];
+  const projectOptions = [
+    "All",
+    ...Array.from(new Set(images.map((i) => i.project_title))),
+  ];
 
   return (
-    <div className="p-6 sm:p-8 space-y-8">
+    <div className="p-4 sm:p-6 md:p-8 space-y-8">
       {/* HEADER */}
-      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 sm:gap-0">
-        <h1 className="text-3xl sm:text-4xl font-bold text-[var(--color-base)] font-figtree">
-          Project Photos
+      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+        <h1 className="text-3xl sm:text-4xl font-bold text-[var(--color-base)] font-figtree flex items-center gap-2">
+          <PhotoIcon className="w-6 h-6" /> Project Photos
         </h1>
-        <div className="flex gap-2 items-center">
-          <select
-            value={projectFilter}
-            onChange={(e) => setProjectFilter(e.target.value)}
-            className="border rounded px-3 py-1 shadow-sm bg-white"
-          >
-            {projectOptions.map((p) => (
-              <option key={p} value={p}>{p}</option>
-            ))}
-          </select>
+
+        <div className="flex items-center gap-2 flex-wrap">
+          <div className="flex items-center gap-2">
+            <span className="text-sm font-medium text-gray-700 flex items-center gap-1">
+              Filter:
+              <PhotoIcon className="w-4 h-4 text-gray-400" />
+            </span>
+            <select
+              value={projectFilter}
+              onChange={(e) => setProjectFilter(e.target.value)}
+              className="border rounded-lg px-3 py-1 focus:outline-none focus:ring-2 focus:ring-[var(--color-accent)] transition"
+            >
+              {projectOptions.map((p) => (
+                <option key={p} value={p}>
+                  {p}
+                </option>
+              ))}
+            </select>
+          </div>
+
           <button
             onClick={() => setAddModalOpen(true)}
             className="flex items-center gap-1 bg-[var(--color-base)] hover:bg-[var(--color-accent)] text-white px-4 py-2 rounded-lg shadow-md transition-all duration-300"
           >
-            <PlusIcon className="w-5 h-5" />
-            Add Image
+            <PlusIcon className="w-5 h-5" /> Add Image
           </button>
         </div>
       </div>
@@ -107,10 +119,10 @@ export default function PhotosPage() {
 
         return (
           <div key={projectName} className="space-y-6">
-            <h2 className="text-2xl font-semibold text-[var(--color-accent)] font-figtree">
-              {projectName}
+            <h2 className="text-2xl font-semibold text-[var(--color-accent)] font-figtree flex items-center gap-2">
+              <PhotoIcon className="w-5 h-5" /> {projectName}
             </h2>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <CrossfadeSlideshow
                 images={beforeImages}
                 label="Before"
@@ -183,13 +195,13 @@ function CrossfadeSlideshow({
         {label}
       </div>
 
-      <div className="relative w-full h-64 sm:h-72 md:h-80 lg:h-96">
+      <div className="relative w-full h-48 sm:h-56 md:h-64 lg:h-72">
         {images.map((img, i) => (
           <img
             key={img.id}
             src={img.image_url}
             alt={`${label} image`}
-            className={`absolute inset-0 w-full h-64 sm:h-72 md:h-80 lg:h-96 object-cover rounded transition-opacity duration-700 ease-in-out ${
+            className={`absolute inset-0 w-full h-48 sm:h-56 md:h-64 lg:h-72 object-cover rounded transition-opacity duration-700 ease-in-out ${
               i === idx ? "opacity-100 z-10" : "opacity-0 z-0"
             }`}
           />
@@ -203,20 +215,20 @@ function CrossfadeSlideshow({
         Edit
       </button>
 
-      <div className="flex justify-start mt-4 space-x-2 overflow-x-auto z-10 relative pb-2">
+      <div className="flex justify-start mt-3 space-x-2 overflow-x-auto z-10 relative pb-2">
         {visibleThumbnails.map((img, i) => (
           <img
             key={img.id}
             src={img.image_url}
             alt="thumbnail"
-            className={`w-12 h-12 sm:w-14 sm:h-14 object-cover rounded border cursor-pointer transition-all duration-300 hover:scale-105 ${
+            className={`w-10 h-10 sm:w-12 sm:h-12 object-cover rounded border cursor-pointer transition-all duration-300 hover:scale-105 ${
               i === idx ? "border-[var(--color-base)]" : "border-gray-300"
             }`}
             onClick={() => setCurrentIndex(i)}
           />
         ))}
         {images.length > 6 && (
-          <div className="w-12 h-12 sm:w-14 sm:h-14 flex items-center justify-center bg-gray-200 rounded text-sm font-medium text-gray-600">
+          <div className="w-10 h-10 sm:w-12 sm:h-12 flex items-center justify-center bg-gray-200 rounded text-sm font-medium text-gray-600">
             +{images.length - 6}
           </div>
         )}

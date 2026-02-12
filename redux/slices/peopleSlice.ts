@@ -5,6 +5,8 @@ import * as api from "../../pages/lib/api";
 
 export type PersonType = "supervisor" | "volunteer" | "trustee";
 
+export type PersonImageType = "avatar";
+
 export interface Person {
   id: number;
   first_name: string;
@@ -12,6 +14,7 @@ export interface Person {
   bio?: string;
   type: PersonType;
   photo_url?: string;
+  photo_type?: PersonImageType; // <-- NEW
   is_active?: boolean;
   created_at?: string;
   updated_at?: string;
@@ -99,7 +102,7 @@ const peopleSlice = createSlice({
   initialState,
   reducers: {},
   extraReducers: (builder) => {
-    // Fetch people
+    // FETCH
     builder.addCase(fetchPeople.pending, (state) => {
       state.loading = true;
       state.error = null;
@@ -109,14 +112,14 @@ const peopleSlice = createSlice({
       (state, action: PayloadAction<Person[]>) => {
         state.loading = false;
         state.people = action.payload;
-      },
+      }
     );
     builder.addCase(fetchPeople.rejected, (state, action) => {
       state.loading = false;
       state.error = action.payload || "Error fetching people";
     });
 
-    // Create person
+    // CREATE
     builder.addCase(createPerson.pending, (state) => {
       state.loading = true;
       state.error = null;
@@ -126,14 +129,14 @@ const peopleSlice = createSlice({
       (state, action: PayloadAction<Person>) => {
         state.loading = false;
         state.people.push(action.payload);
-      },
+      }
     );
     builder.addCase(createPerson.rejected, (state, action) => {
       state.loading = false;
       state.error = action.payload || "Error creating person";
     });
 
-    // Update person
+    // UPDATE
     builder.addCase(updatePerson.pending, (state) => {
       state.loading = true;
       state.error = null;
@@ -148,14 +151,14 @@ const peopleSlice = createSlice({
             ...state.people[idx],
             ...action.payload.updates,
           };
-      },
+      }
     );
     builder.addCase(updatePerson.rejected, (state, action) => {
       state.loading = false;
       state.error = action.payload || "Error updating person";
     });
 
-    // Delete person
+    // DELETE
     builder.addCase(deletePerson.pending, (state) => {
       state.loading = true;
       state.error = null;
@@ -164,8 +167,10 @@ const peopleSlice = createSlice({
       deletePerson.fulfilled,
       (state, action: PayloadAction<{ id: number }>) => {
         state.loading = false;
-        state.people = state.people.filter((p) => p.id !== action.payload.id);
-      },
+        state.people = state.people.filter(
+          (p) => p.id !== action.payload.id
+        );
+      }
     );
     builder.addCase(deletePerson.rejected, (state, action) => {
       state.loading = false;

@@ -5,6 +5,7 @@ import { useDispatch } from "react-redux";
 import { AppDispatch } from "../redux/store";
 import { createProject } from "../redux/slices/projectsSlice";
 import { useRouter } from "next/router";
+import Loader from "@/components/Loader";
 
 const CreateProjectForm = () => {
   const dispatch = useDispatch<AppDispatch>();
@@ -52,51 +53,52 @@ const CreateProjectForm = () => {
   };
 
   return (
-    <div className="max-w-md mx-auto mt-10 p-6 bg-white rounded-2xl shadow-xl animate-fadeIn">
-      <h2 className="text-2xl font-bold mb-6 text-[var(--color-base)] font-figtree">
-        Create New Project
+    <div className="max-w-sm mx-auto mt-8 bg-white rounded-xl shadow-lg p-4 animate-fadeIn">
+      <h2 className="text-lg font-semibold mb-4 text-[var(--color-base)]">
+        Create Project
       </h2>
 
-      <form onSubmit={handleSubmit} className="space-y-5">
+      <form onSubmit={handleSubmit} className="space-y-3 text-sm">
         <div>
-          <label className="block font-semibold mb-2">Title</label>
+          <label className="block font-medium mb-1">Title</label>
           <input
             type="text"
             value={title}
             onChange={(e) => setTitle(e.target.value)}
-            className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-[var(--color-accent)] focus:outline-none transition"
-            placeholder="Project Title"
+            placeholder="Project title"
+            className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-[var(--color-accent)] transition"
           />
         </div>
 
         <div>
-          <label className="block font-semibold mb-2">Description</label>
+          <label className="block font-medium mb-1">Description</label>
           <textarea
+            rows={3}
             value={description}
             onChange={(e) => setDescription(e.target.value)}
-            className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-[var(--color-accent)] focus:outline-none transition"
-            placeholder="Project Description (optional)"
+            placeholder="Optional description"
+            className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-[var(--color-accent)] transition resize-none"
           />
         </div>
 
-        <div className="flex gap-4">
+        <div className="flex gap-3">
           <div className="flex-1">
-            <label className="block font-semibold mb-2">Start Date</label>
+            <label className="block font-medium mb-1">Start</label>
             <input
               type="date"
               value={startDate}
               onChange={(e) => setStartDate(e.target.value)}
-              className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-[var(--color-accent)] focus:outline-none transition"
+              className="w-full border border-gray-300 rounded-lg px-2 py-2 text-xs focus:ring-2 focus:ring-[var(--color-accent)] transition"
             />
           </div>
 
           <div className="flex-1">
-            <label className="block font-semibold mb-2">End Date</label>
+            <label className="block font-medium mb-1">End</label>
             <input
               type="date"
               value={endDate}
               onChange={(e) => setEndDate(e.target.value)}
-              className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-[var(--color-accent)] focus:outline-none transition"
+              className="w-full border border-gray-300 rounded-lg px-2 py-2 text-xs focus:ring-2 focus:ring-[var(--color-accent)] transition"
             />
           </div>
         </div>
@@ -104,9 +106,15 @@ const CreateProjectForm = () => {
         <button
           type="submit"
           disabled={loading}
-          className="w-full bg-[var(--color-base)] text-white font-bold py-3 px-4 rounded-lg hover:brightness-110 hover:scale-[1.03] transition-all duration-300 disabled:opacity-50"
+          className="w-full bg-[var(--color-base)] text-white py-2 rounded-lg font-semibold transition hover:brightness-110 disabled:opacity-60"
         >
-          {loading ? "Creating..." : "Create Project"}
+          {loading ? (
+            <div className="flex justify-center py-1">
+              <Loader />
+            </div>
+          ) : (
+            "Create Project"
+          )}
         </button>
       </form>
     </div>
