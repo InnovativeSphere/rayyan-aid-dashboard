@@ -11,14 +11,14 @@ const Footer = () => {
         <div className="flex flex-col items-start">
           <div className="flex items-center gap-2 mb-3">
             <Image
-              src="/Rayyan Aid Logo-03.png"
-              alt="Rayyan Aid Logo"
-              width={50}
-              height={50}
-              className="object-contain"
+                   src="/jewel-foundation-logo.png"
+              alt="jewel-foundation Logo"
+              width={100}
+              height={70}
+              className="object-contain my-2"
             />
             <h4 className="font-heading text-xl text-[var(--color-base)]">
-              Rayyan Aid
+             Jewel Foundation
             </h4>
           </div>
           <p className="font-body text-[var(--color-gray)] leading-7">
@@ -63,7 +63,7 @@ const Footer = () => {
                 href="mailto:info@rayyanaid.org"
                 className="hover:text-[var(--color-base)] transition-colors duration-300"
               >
-                info@rayyanaid.org
+                info@jewelfoundation.org
               </Link>
             </li>
             <li>
@@ -72,10 +72,13 @@ const Footer = () => {
                 href="tel:07063653772"
                 className="hover:text-[var(--color-base)] transition-colors duration-300"
               >
-                07063653772
+                +234 800 000 0000
               </Link>
             </li>
-            <li>Address: Abuja, Nigeria</li>
+            <li>
+              Address: Braverock Park Behind Ministry of Women Affairs Gombe
+              State
+            </li>
           </ul>
           <div className="flex mt-4 space-x-4">
             {[
@@ -103,7 +106,7 @@ const Footer = () => {
       </div>
 
       <div className="mt-10 border-t border-[var(--color-white)]/20 pt-6 text-center font-body text-[var(--color-gray)] text-sm">
-        &copy; {new Date().getFullYear()} Rayyan Aid. All rights reserved.
+        &copy; {new Date().getFullYear()}    Jewel Foundation. All rights reserved.
       </div>
     </footer>
   );

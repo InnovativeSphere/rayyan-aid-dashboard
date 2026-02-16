@@ -24,13 +24,16 @@
   --font-heading: "Nunito", sans-serif;
   --font-decor: "Caveat", cursive;
 
-  --color-base: #ff7f50; /* coral-orange, primary highlights & buttons */
-  --color-accent: #ffb142; /* warm golden, links & hovers */
-  --color-secondary: #1e90ff; /* sky blue, badges & secondary actions */
-  --color-black: #2f3542; /* dark slate, text & panels */
-  --color-gray: #636e72; /* medium gray, body text & secondary content */
+   --color-base: #ff5528; /* bold coral-red, primary highlights & buttons */
+  --color-accent: #ffd8a8; /* light golden, links & hovers */
+  --color-secondary: #1f7a6e; /* rich teal, badges & secondary actions */
+  --color-black: #0b2f24; /* deep forest, text & panels */
+  --color-gray: #8a8d91; /* cool gray, body text & secondary content */
   --color-white: #ffffff; /* text on colored backgrounds */
-  --color-light: #f5f6fa; /* soft pale background */
+  --color-light: #f7f1e5; /* soft creamy background */
+
+
+
   /* Borders & radius */
   --radius-lg: 20px;
 

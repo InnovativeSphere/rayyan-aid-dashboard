@@ -5,7 +5,9 @@ import * as api from "../../pages/lib/api";
 
 export type ImageDescription = string;
 
-export type ProjectImageType = "project_before" | "project_after";
+export type ProjectImageType =
+  | "jewel_foundation_project_before"
+  | "jewel_foundation_project_after";
 
 export interface ProjectImage {
   id: number;
@@ -126,7 +128,7 @@ const projectImagesSlice = createSlice({
         (state, action: PayloadAction<ProjectImage[]>) => {
           state.loading = false;
           state.images = action.payload;
-        }
+        },
       )
       .addCase(fetchProjectImages.rejected, (state, action) => {
         state.loading = false;
@@ -143,7 +145,7 @@ const projectImagesSlice = createSlice({
         (state, action: PayloadAction<ProjectImage[]>) => {
           state.loading = false;
           state.images.push(...action.payload);
-        }
+        },
       )
       .addCase(addProjectImages.rejected, (state, action) => {
         state.loading = false;
@@ -160,9 +162,9 @@ const projectImagesSlice = createSlice({
         (state, action: PayloadAction<{ id: number }>) => {
           state.loading = false;
           state.images = state.images.filter(
-            (img) => img.id !== action.payload.id
+            (img) => img.id !== action.payload.id,
           );
-        }
+        },
       )
       .addCase(removeProjectImage.rejected, (state, action) => {
         state.loading = false;

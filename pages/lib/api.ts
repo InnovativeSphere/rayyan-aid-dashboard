@@ -22,12 +22,11 @@ if (typeof window !== "undefined") {
 }
 
 // ------------------- CLOUD UPLOAD -------------------
-// ✅ extended to support partners
 export type UploadImageType =
-  | "avatar"
-  | "project_before"
-  | "project_after"
-  | "partner";
+  | "jewel_foundation_avatar"
+  | "jewel_foundation_project_before"
+  | "jewel_foundation_project_after"
+  | "jewel_foundation_partner_logo";
 
 export interface UploadResponse {
   url: string;
@@ -90,8 +89,10 @@ export const deleteProject = (id: number) =>
 // ------------------- PROJECT PEOPLE -------------------
 export const getProjectPeople = (filters = {}) =>
   api.get("/project_people", { params: filters }).then((res) => res.data);
+
 export const addPersonToProject = (link: any) =>
   api.post("/project_people", link).then((res) => res.data);
+
 export const removePersonFromProject = (id: number) =>
   api.delete("/project_people", { data: { id } }).then((res) => res.data);
 
@@ -118,8 +119,10 @@ export const getDonations = (project_id?: number) =>
 
 export const addDonation = (donation: any) =>
   api.post("/donations", donation).then((res) => res.data);
+
 export const updateDonation = (id: number, data: any) =>
   api.put("/donations", { id, ...data }).then((res) => res.data);
+
 export const deleteDonation = (id: number) =>
   api.delete("/donations", { data: { id } }).then((res) => res.data);
 
@@ -136,9 +139,12 @@ export const getTotalDonationsPerProject = () =>
 // ------------------- CATEGORIES -------------------
 export const getCategories = () =>
   api.get("/categories").then((res) => res.data);
+
 export const createCategory = (category: any) =>
   api.post("/categories", category).then((res) => res.data);
+
 export const updateCategory = (id: number, data: any) =>
   api.put("/categories", { id, ...data }).then((res) => res.data);
+
 export const deleteCategory = (id: number) =>
   api.delete("/categories", { data: { id } }).then((res) => res.data);

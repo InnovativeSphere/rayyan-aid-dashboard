@@ -50,7 +50,7 @@ export default function SupervisorsPage() {
 
         <button
           onClick={() => setCreateModalOpen(true)}
-          className="bg-[var(--color-accent)] text-white px-5 py-2.5 rounded-lg
+          className="bg-[var(--color-base)] text-white px-5 py-2.5 rounded-lg
           shadow-md hover:shadow-lg hover:scale-[1.03] transition-all flex items-center gap-1"
         >
           <Plus size={12} className="" />

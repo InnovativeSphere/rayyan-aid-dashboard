@@ -5,7 +5,8 @@ import * as api from "../../pages/lib/api";
 
 export type PersonType = "supervisor" | "volunteer" | "trustee";
 
-export type PersonImageType = "avatar";
+export type PersonImageType = "jewel_foundation_avatar";
+
 
 export interface Person {
   id: number;
@@ -14,7 +15,7 @@ export interface Person {
   bio?: string;
   type: PersonType;
   photo_url?: string;
-  photo_type?: PersonImageType; // <-- NEW
+  photo_type?: PersonImageType; 
   is_active?: boolean;
   created_at?: string;
   updated_at?: string;

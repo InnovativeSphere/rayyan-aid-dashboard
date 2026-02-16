@@ -61,14 +61,14 @@ export default function Sidebar({ collapsed, setCollapsed }: SidebarProps) {
         {!collapsed && (
           <div className="flex items-center gap-2">
             <Image
-              src="/Rayyan Aid Logo-03.png"
-              alt="Rayyan Aid Logo"
-              width={40}
-              height={40}
-              className="object-contain"
+              src="/jewel-foundation-logo.png"
+              alt="jewel-foundation Logo"
+              width={100}
+              height={70}
+              className="object-contain my-2"
             />
-            <span className="font-bold text-[var(--color-base)] text-lg tracking-wide">
-              Rayyan Aid
+            <span className="font-bold text-[var(--color-base)] text-sm tracking-wide">
+             {/* Jewel Foundation */}
             </span>
           </div>
         )}
@@ -97,7 +97,7 @@ export default function Sidebar({ collapsed, setCollapsed }: SidebarProps) {
               transition-all duration-300
               ${
                 pathname === item.href
-                  ? "bg-[var(--color-accent)] shadow-md"
+                  ? "bg-[var(--color-secondary)] shadow-md"
                   : "bg-transparent hover:bg-[var(--color-base)]/30"
               }
             `}
@@ -117,7 +117,7 @@ export default function Sidebar({ collapsed, setCollapsed }: SidebarProps) {
             await dispatch(logoutUser());
             router.push("/");
           }}
-          className="w-full bg-[var(--color-accent)] hover:bg-[var(--color-base)] p-2 rounded-lg transition-all duration-300 text-sm font-medium flex items-center justify-center gap-2"
+          className="w-full bg-[var(--color-base)] hover:bg-red-500 p-2 rounded-lg transition-all duration-300 text-sm font-medium flex items-center justify-center gap-2"
         >
           {!collapsed && "Logout"}
           {!collapsed && <XMarkIcon className="w-4 h-4 text-white" />}

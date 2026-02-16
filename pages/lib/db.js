@@ -4,7 +4,8 @@ const pool = mysql.createPool({
   host: "localhost",
   user: "root",
   password: "IntoTheDarknessUnafraid123!", 
-  database: "charity_platform",
+  database: "jewel_foundation_database", 
 });
 
 export default pool;
+

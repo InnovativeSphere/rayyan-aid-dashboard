@@ -40,13 +40,16 @@ export default function LoginPage() {
         {/* Brand Logo & Name */}
         <div className="text-center">
           <Image
-            src="/Rayyan Aid Logo-03.jpg"
-            alt="Rayyan Aid Logo"
-            width={70}
-            height={70}
-            className="mx-auto mb-3"
+             src="/jewel-foundation-logo.png"
+              alt="jewel-foundation Logo"
+              width={100}
+              height={70}
+            className="mx-auto my-3"
           />
-          <h1 className="text-2xl font-bold text-gray-900">Rayyan Aid</h1>
+          <h1 className="text-2xl font-bold text-gray-900">
+            {" "}
+            Jewel Foundation
+          </h1>
         </div>
 
         {/* Header */}
@@ -91,7 +94,7 @@ export default function LoginPage() {
           <button
             type="submit"
             disabled={loading}
-            className="w-full flex items-center justify-center gap-2 py-2.5 rounded-lg bg-blue-600 hover:bg-blue-700 text-white font-medium transition-all duration-200 disabled:opacity-50"
+            className="w-full flex items-center justify-center gap-2 py-2.5 rounded-lg bg-amber-500 hover:bg-amber-600 text-white font-medium transition-all duration-200 disabled:opacity-50"
           >
             {loading ? (
               "Signing in..."
@@ -106,7 +109,7 @@ export default function LoginPage() {
 
         {/* Footer */}
         <p className="text-gray-500 text-xs text-center mt-3">
-          &copy; {new Date().getFullYear()} Rayyan Aid. All rights reserved.
+          &copy; {new Date().getFullYear()}    Jewel Foundation. All rights reserved.
         </p>
       </div>
     </div>

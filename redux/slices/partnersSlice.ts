@@ -1,10 +1,13 @@
 import { createSlice, createAsyncThunk, PayloadAction } from "@reduxjs/toolkit";
 import * as api from "../../pages/lib/api";
 
+export type PartnerImageType = "jewel_foundation_partner_logo";
+
 export interface Partner {
   id: number;
   name: string;
   logo_url?: string | null;
+  logo_type?: PartnerImageType;
   website_url?: string | null;
   created_at?: string;
   updated_at?: string;
@@ -85,8 +88,12 @@ export const uploadPartnerLogo = createAsyncThunk<
   { rejectValue: string }
 >("partners/uploadLogo", async ({ partnerId, file }, thunkAPI) => {
   try {
-    const res = await api.uploadImage(file, "partner");
-    return { partnerId, logo_url: res.url };
+    const res = await api.uploadImage(file, "jewel_foundation_partner_logo");
+
+    return {
+      partnerId,
+      logo_url: res.url,
+    };
   } catch (err: any) {
     return thunkAPI.rejectWithValue(err.response?.data || err.message);
   }

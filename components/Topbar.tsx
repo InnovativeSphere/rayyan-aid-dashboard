@@ -20,7 +20,7 @@ export default function Topbar({ sidebarCollapsed }: TopbarProps) {
       `}
     >
       <div className="font-bold text-[var(--color-base)] text-lg transition-all duration-500">
-        Rayyan Aid
+      Jewel Foundation
       </div>
 
       {user && (
